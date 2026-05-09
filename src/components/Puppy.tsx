@@ -1,67 +1,67 @@
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { RoundedBox } from '@react-three/drei';
+import { RigidBody, RapierRigidBody } from '@react-three/rapier';
 import * as THREE from 'three';
 import { useGameStore } from '../store';
 
 export function Puppy() {
-  const groupRef = useRef<THREE.Group>(null);
-  const meshRef = useRef<THREE.Mesh>(null);
+  const rigidBodyRef = useRef<RapierRigidBody>(null);
+  const meshRef = useRef<THREE.Group>(null);
   
-  const currentPosition = useRef(new THREE.Vector3(2, 0, 2));
-  const velocity = useRef(0);
+  // State
   const hopTime = useRef(0);
+  const followDistance = 3;
 
   useFrame((state, delta) => {
-    if (!groupRef.current || !meshRef.current) return;
+    if (!rigidBodyRef.current || !meshRef.current) return;
 
-    // Get target position from store (slightly behind/beside player)
+    // Get target position from store
     const playerPos = useGameStore.getState().playerPosition;
+    const currentPos = new THREE.Vector3().copy(rigidBodyRef.current.translation());
+    const currentVel = rigidBodyRef.current.linvel();
     
-    // Calculate distance to player
-    const distance = currentPosition.current.distanceTo(playerPos);
+    // Distance check
+    const distance = currentPos.distanceTo(playerPos);
     
-    // Only move if we are far enough away (don't push the player)
-    if (distance > 2) {
-      // Calculate direction
-      const direction = new THREE.Vector3().subVectors(playerPos, currentPosition.current);
+    if (distance > followDistance) {
+      // Calculate direction to player
+      const direction = new THREE.Vector3().subVectors(playerPos, currentPos);
       direction.y = 0; // Keep movement on XZ plane
       direction.normalize();
       
-      // Calculate speed based on distance (run faster if further behind)
-      const speed = Math.min(8, distance * 2);
-      velocity.current = speed;
+      // Calculate speed (faster if further away, up to a cap)
+      const speedMultiplier = Math.min(distance * 1.5, 8);
       
-      // Move puppy
-      currentPosition.current.addScaledVector(direction, speed * delta);
-      
-      // Rotate puppy to face movement direction
+      // Rotate to face player
       const targetRotation = Math.atan2(direction.x, direction.z);
-      const currentRotation = groupRef.current.rotation.y;
       
       // Smooth rotation
+      const currentRotation = meshRef.current.rotation.y;
       let diff = targetRotation - currentRotation;
       while (diff < -Math.PI) diff += Math.PI * 2;
       while (diff > Math.PI) diff -= Math.PI * 2;
-      groupRef.current.rotation.y += diff * 10 * delta;
+      meshRef.current.rotation.y += diff * 8 * delta;
       
-      // Bouncy animation while running
-      hopTime.current += delta * speed * 2;
+      // Set linear velocity towards player
+      rigidBodyRef.current.setLinvel(
+        { x: direction.x * speedMultiplier, y: currentVel.y, z: direction.z * speedMultiplier },
+        true
+      );
+      
+      // Animate hopping based on actual speed
+      hopTime.current += delta * speedMultiplier * 2;
       meshRef.current.position.y = 0.25 + Math.abs(Math.sin(hopTime.current)) * 0.3;
-      meshRef.current.rotation.z = Math.sin(hopTime.current) * 0.1;
-      
     } else {
-      velocity.current = 0;
-      // Idle settle
+      // Stop moving
+      rigidBodyRef.current.setLinvel({ x: 0, y: currentVel.y, z: 0 }, true);
+      // Reset hop height smoothly
       meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, 0.25, 10 * delta);
-      meshRef.current.rotation.z = THREE.MathUtils.lerp(meshRef.current.rotation.z, 0, 10 * delta);
     }
-    
-    groupRef.current.position.copy(currentPosition.current);
   });
 
   return (
-    <group ref={groupRef} position={[2, 0, 2]}>
+    <RigidBody ref={rigidBodyRef} type="dynamic" colliders="cuboid" lockRotations position={[2, 2, 2]} mass={0.5} friction={0.5}>
       <group ref={meshRef} position={[0, 0.25, 0]}>
         {/* Puppy Body */}
         <RoundedBox args={[0.4, 0.4, 0.6]} radius={0.05} smoothness={4} castShadow position={[0, 0, 0]}>
@@ -93,10 +93,10 @@ export function Puppy() {
       </group>
       
       {/* Shadow */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} receiveShadow>
-        <circleGeometry args={[0.4, 16]} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.2, 0]} receiveShadow>
+        <circleGeometry args={[0.3, 32]} />
         <meshBasicMaterial color="#000000" transparent opacity={0.2} />
       </mesh>
-    </group>
+    </RigidBody>
   );
 }

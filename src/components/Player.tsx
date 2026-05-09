@@ -81,7 +81,7 @@ export function Player() {
     const currentPosition = new THREE.Vector3(pos.x, pos.y, pos.z);
     
     // Update global store
-    useGameStore.getState().setPlayerPosition(currentPosition.current.clone());
+    useGameStore.getState().setPlayerPosition(currentPosition.clone());
 
     // Third Person Camera Logic
     // Camera should follow slightly behind and above the player
