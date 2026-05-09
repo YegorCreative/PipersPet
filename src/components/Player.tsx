@@ -1,25 +1,24 @@
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useKeyboardControls } from '@react-three/drei';
+import { RigidBody, RapierRigidBody } from '@react-three/rapier';
 import * as THREE from 'three';
 import { useGameStore } from '../store';
 
 export function Player() {
-  const groupRef = useRef<THREE.Group>(null);
+  const rigidBodyRef = useRef<RapierRigidBody>(null);
   const meshRef = useRef<THREE.Group>(null);
   const [, get] = useKeyboardControls();
   
   // Smoothing values
-  const currentPosition = useRef(new THREE.Vector3());
-  const targetPosition = useRef(new THREE.Vector3());
   const cameraTarget = useRef(new THREE.Vector3());
   
   const speed = 5;
 
   useFrame((state, delta) => {
-    if (!groupRef.current) return;
+    if (!rigidBodyRef.current) return;
 
-    const { forward, backward, left, right } = get();
+    const { forward, backward, left, right, jump } = get();
     
     // Calculate movement vector based on camera direction
     const direction = new THREE.Vector3(0, 0, 0);
@@ -38,11 +37,14 @@ export function Player() {
     if (right) direction.sub(cameraRight);
     if (left) direction.add(cameraRight);
 
+    const currentVel = rigidBodyRef.current.linvel();
+    let targetVelocityX = 0;
+    let targetVelocityZ = 0;
+
     if (direction.length() > 0) {
       direction.normalize();
-      
-      // Update target position
-      targetPosition.current.addScaledVector(direction, speed * delta);
+      targetVelocityX = direction.x * speed;
+      targetVelocityZ = direction.z * speed;
       
       // Rotate player mesh to face movement direction
       if (meshRef.current) {
@@ -59,29 +61,40 @@ export function Player() {
       }
     }
 
-    // Apply movement (simulated physics/lerp)
-    currentPosition.current.lerp(targetPosition.current, 10 * delta);
-    groupRef.current.position.copy(currentPosition.current);
+    // Apply smooth linear velocity
+    rigidBodyRef.current.setLinvel(
+      { 
+        x: THREE.MathUtils.lerp(currentVel.x, targetVelocityX, 10 * delta), 
+        y: currentVel.y, 
+        z: THREE.MathUtils.lerp(currentVel.z, targetVelocityZ, 10 * delta) 
+      },
+      true
+    );
+
+    // Jumping
+    if (jump && Math.abs(currentVel.y) < 0.1) {
+      rigidBodyRef.current.applyImpulse({ x: 0, y: 1.5, z: 0 }, true);
+    }
+
+    // Get true position from physics body
+    const pos = rigidBodyRef.current.translation();
+    const currentPosition = new THREE.Vector3(pos.x, pos.y, pos.z);
     
     // Update global store
     useGameStore.getState().setPlayerPosition(currentPosition.current.clone());
 
     // Third Person Camera Logic
     // Camera should follow slightly behind and above the player
-    const idealCameraOffset = new THREE.Vector3(0, 3, 6);
-    idealCameraOffset.applyQuaternion(state.camera.quaternion);
-    // Ignore pitch for offset calculation to keep camera stable vertically
-    
-    const cameraPos = currentPosition.current.clone().add(new THREE.Vector3(0, 4, 8));
+    const cameraPos = currentPosition.clone().add(new THREE.Vector3(0, 4, 8));
     
     state.camera.position.lerp(cameraPos, 5 * delta);
     
-    cameraTarget.current.lerp(currentPosition.current.clone().add(new THREE.Vector3(0, 1, 0)), 10 * delta);
+    cameraTarget.current.lerp(currentPosition.clone().add(new THREE.Vector3(0, 1, 0)), 10 * delta);
     state.camera.lookAt(cameraTarget.current);
   });
 
   return (
-    <group ref={groupRef} position={[0, 0, 0]}>
+    <RigidBody ref={rigidBodyRef} type="dynamic" colliders="cuboid" lockRotations position={[0, 2, 0]} mass={1} friction={0.5}>
       {/* Player Model - Voxel Girl */}
       <group ref={meshRef} position={[0, 0, 0]}>
         {/* Body / Dress */}
@@ -148,6 +161,6 @@ export function Player() {
         <circleGeometry args={[0.7, 32]} />
         <meshBasicMaterial color="#000000" transparent opacity={0.2} />
       </mesh>
-    </group>
+    </RigidBody>
   );
 }

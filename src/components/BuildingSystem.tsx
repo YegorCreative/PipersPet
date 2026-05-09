@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { RoundedBox } from '@react-three/drei';
+import { RigidBody } from '@react-three/rapier';
 import * as THREE from 'three';
 import { useGameStore } from '../store';
 
@@ -16,23 +17,23 @@ export function BuildingSystem() {
     <>
       {/* Voxel Renderer */}
       {voxels.map((voxel, i) => (
-        <RoundedBox 
-          key={i} 
-          position={voxel.position} 
-          args={[1, 1, 1]} 
-          radius={0.05} 
-          smoothness={4}
-          castShadow 
-          receiveShadow
-        >
-          <meshPhysicalMaterial 
-            color="#8D6E63" 
-            roughness={0.7} 
-            metalness={0.1}
-            clearcoat={0.1}
-            clearcoatRoughness={0.4}
-          /> {/* Premium Wood color */}
-        </RoundedBox>
+        <RigidBody key={i} type="fixed" colliders="cuboid" position={voxel.position}>
+          <RoundedBox 
+            args={[1, 1, 1]} 
+            radius={0.05} 
+            smoothness={4}
+            castShadow 
+            receiveShadow
+          >
+            <meshPhysicalMaterial 
+              color="#8D6E63" 
+              roughness={0.7} 
+              metalness={0.1}
+              clearcoat={0.1}
+              clearcoatRoughness={0.4}
+            /> {/* Premium Wood color */}
+          </RoundedBox>
+        </RigidBody>
       ))}
 
       {/* Hologram / Build Cursor */}

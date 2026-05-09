@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 import { useGameStore } from '../store';
 
@@ -63,38 +64,32 @@ export function Puppy() {
     <group ref={groupRef} position={[2, 0, 2]}>
       <group ref={meshRef} position={[0, 0.25, 0]}>
         {/* Puppy Body */}
-        <mesh castShadow position={[0, 0, 0]}>
-          <boxGeometry args={[0.4, 0.4, 0.6]} />
-          <meshStandardMaterial color="#FFFFFF" roughness={0.9} />
-        </mesh>
+        <RoundedBox args={[0.4, 0.4, 0.6]} radius={0.05} smoothness={4} castShadow position={[0, 0, 0]}>
+          <meshPhysicalMaterial color="#FFFFFF" roughness={0.9} clearcoat={0.1} />
+        </RoundedBox>
         
         {/* Puppy Head */}
-        <mesh castShadow position={[0, 0.3, 0.3]}>
-          <boxGeometry args={[0.4, 0.4, 0.4]} />
-          <meshStandardMaterial color="#FFFFFF" roughness={0.9} />
-        </mesh>
+        <RoundedBox args={[0.4, 0.4, 0.4]} radius={0.05} smoothness={4} castShadow position={[0, 0.3, 0.3]}>
+          <meshPhysicalMaterial color="#FFFFFF" roughness={0.9} clearcoat={0.1} />
+        </RoundedBox>
         
         {/* Ears */}
-        <mesh castShadow position={[-0.25, 0.3, 0.3]} rotation={[0, 0, 0.2]}>
-          <boxGeometry args={[0.1, 0.3, 0.2]} />
-          <meshStandardMaterial color="#333333" />
-        </mesh>
-        <mesh castShadow position={[0.25, 0.3, 0.3]} rotation={[0, 0, -0.2]}>
-          <boxGeometry args={[0.1, 0.3, 0.2]} />
-          <meshStandardMaterial color="#333333" />
-        </mesh>
+        <RoundedBox args={[0.1, 0.3, 0.2]} radius={0.02} smoothness={4} castShadow position={[-0.25, 0.3, 0.3]} rotation={[0, 0, 0.2]}>
+          <meshPhysicalMaterial color="#333333" roughness={0.9} />
+        </RoundedBox>
+        <RoundedBox args={[0.1, 0.3, 0.2]} radius={0.02} smoothness={4} castShadow position={[0.25, 0.3, 0.3]} rotation={[0, 0, -0.2]}>
+          <meshPhysicalMaterial color="#333333" roughness={0.9} />
+        </RoundedBox>
         
         {/* Tail */}
-        <mesh castShadow position={[0, 0.1, -0.4]} rotation={[0.5, 0, 0]}>
-          <boxGeometry args={[0.1, 0.1, 0.3]} />
-          <meshStandardMaterial color="#FFFFFF" />
-        </mesh>
+        <RoundedBox args={[0.1, 0.1, 0.3]} radius={0.02} smoothness={4} castShadow position={[0, 0.1, -0.4]} rotation={[0.5, 0, 0]}>
+          <meshPhysicalMaterial color="#FFFFFF" />
+        </RoundedBox>
         
         {/* Nose */}
-        <mesh position={[0, 0.3, 0.51]}>
-          <boxGeometry args={[0.1, 0.1, 0.1]} />
-          <meshStandardMaterial color="#000000" />
-        </mesh>
+        <RoundedBox args={[0.1, 0.1, 0.1]} radius={0.02} smoothness={4} position={[0, 0.3, 0.51]}>
+          <meshPhysicalMaterial color="#000000" />
+        </RoundedBox>
       </group>
       
       {/* Shadow */}

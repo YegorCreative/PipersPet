@@ -2,6 +2,7 @@ import React, { useMemo, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Sky, KeyboardControls, Environment, SoftShadows } from '@react-three/drei';
 import { EffectComposer, SSAO, Bloom } from '@react-three/postprocessing';
+import { Physics, RigidBody } from '@react-three/rapier';
 import { Player } from './components/Player';
 import { Puppy } from './components/Puppy';
 import { BuildingSystem } from './components/BuildingSystem';
@@ -81,30 +82,38 @@ function App() {
         <KeyboardControls map={keyboardMap}>
           <color attach="background" args={['#87CEEB']} />
           
+          <SoftShadows size={20} samples={16} focus={0.5} />
+          
           {/* Environment & Lighting */}
-          <Sky distance={450000} sunPosition={[0, 1, 0]} inclination={0} azimuth={0.25} />
-          <ambientLight intensity={0.5} />
+          <Sky distance={450000} sunPosition={[10, 20, 10]} inclination={0} azimuth={0.25} />
+          <Environment preset="city" />
+          <ambientLight intensity={0.2} />
           <directionalLight 
             castShadow 
             position={[10, 20, 10]} 
             intensity={1.5} 
-            shadow-mapSize={[1024, 1024]}
+            shadow-mapSize={[2048, 2048]}
+            shadow-bias={-0.0001}
           >
             <orthographicCamera attach="shadow-camera" args={[-20, 20, 20, -20, 0.1, 50]} />
           </directionalLight>
 
-          {/* Ground Plane */}
-          <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-            <planeGeometry args={[100, 100]} />
-            <meshStandardMaterial color="#2E7D32" />
-          </mesh>
+          <Physics>
+            {/* Ground Plane */}
+            <RigidBody type="fixed" colliders="cuboid">
+              <mesh receiveShadow position={[0, -0.5, 0]}>
+                <boxGeometry args={[100, 1, 100]} />
+                <meshPhysicalMaterial color="#2E7D32" roughness={0.9} metalness={0.1} />
+              </mesh>
+            </RigidBody>
 
-          {/* Player, Camera, & Pets */}
-          <Player />
-          <Puppy />
-          
-          {/* Building System */}
-          <BuildingSystem />
+            {/* Player, Camera, & Pets */}
+            <Player />
+            <Puppy />
+            
+            {/* Building System */}
+            <BuildingSystem />
+          </Physics>
           
           {/* Post Processing */}
           <EffectComposer>
