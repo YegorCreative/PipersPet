@@ -16,6 +16,8 @@ export function Puppy() {
   useFrame((state, delta) => {
     if (!rigidBodyRef.current || !meshRef.current) return;
 
+    rigidBodyRef.current.wakeUp();
+
     // Get target position from store
     const playerPos = useGameStore.getState().playerPosition;
     const currentPos = new THREE.Vector3().copy(rigidBodyRef.current.translation());
@@ -61,7 +63,7 @@ export function Puppy() {
   });
 
   return (
-    <RigidBody ref={rigidBodyRef} type="dynamic" colliders="cuboid" lockRotations position={[2, 2, 2]} mass={0.5} friction={0.5}>
+    <RigidBody ref={rigidBodyRef} type="dynamic" colliders="cuboid" lockRotations position={[2, 2, 2]} mass={0.5} friction={0}>
       <group ref={meshRef} position={[0, 0.25, 0]}>
         {/* Puppy Body */}
         <RoundedBox args={[0.4, 0.4, 0.6]} radius={0.05} smoothness={4} castShadow position={[0, 0, 0]}>
