@@ -6,7 +6,7 @@ import { useGameStore } from '../store';
 
 export function Player() {
   const groupRef = useRef<THREE.Group>(null);
-  const meshRef = useRef<THREE.Mesh>(null);
+  const meshRef = useRef<THREE.Group>(null);
   const [, get] = useKeyboardControls();
   
   // Smoothing values
@@ -82,17 +82,66 @@ export function Player() {
 
   return (
     <group ref={groupRef} position={[0, 0, 0]}>
-      {/* Player Model Placeholder */}
-      <mesh ref={meshRef} castShadow position={[0, 0.5, 0]}>
-        <boxGeometry args={[1, 1, 1]} />
-        <meshStandardMaterial color="#FFB74D" roughness={0.7} />
-        
-        {/* Simple "face" indicator to show direction */}
-        <mesh position={[0, 0.2, 0.51]}>
-          <boxGeometry args={[0.6, 0.2, 0.1]} />
-          <meshStandardMaterial color="#333333" />
+      {/* Player Model - Voxel Girl */}
+      <group ref={meshRef} position={[0, 0, 0]}>
+        {/* Body / Dress */}
+        <mesh castShadow position={[0, 0.6, 0]}>
+          <cylinderGeometry args={[0.3, 0.5, 0.8, 8]} />
+          <meshStandardMaterial color="#F48FB1" roughness={0.8} /> {/* Pink dress */}
         </mesh>
-      </mesh>
+        
+        {/* Head */}
+        <mesh castShadow position={[0, 1.25, 0]}>
+          <boxGeometry args={[0.6, 0.6, 0.6]} />
+          <meshStandardMaterial color="#FFCCBC" roughness={0.5} /> {/* Peach skin */}
+        </mesh>
+
+        {/* Hair (Base) */}
+        <mesh castShadow position={[0, 1.35, -0.05]}>
+          <boxGeometry args={[0.65, 0.5, 0.65]} />
+          <meshStandardMaterial color="#5D4037" roughness={0.9} /> {/* Brown hair */}
+        </mesh>
+
+        {/* Hair (Pigtails) */}
+        <mesh castShadow position={[-0.4, 1.1, -0.1]} rotation={[0, 0, 0.2]}>
+          <boxGeometry args={[0.2, 0.4, 0.2]} />
+          <meshStandardMaterial color="#5D4037" roughness={0.9} />
+        </mesh>
+        <mesh castShadow position={[0.4, 1.1, -0.1]} rotation={[0, 0, -0.2]}>
+          <boxGeometry args={[0.2, 0.4, 0.2]} />
+          <meshStandardMaterial color="#5D4037" roughness={0.9} />
+        </mesh>
+        
+        {/* Face / Eyes */}
+        <mesh position={[-0.15, 1.25, 0.31]}>
+          <boxGeometry args={[0.1, 0.1, 0.05]} />
+          <meshStandardMaterial color="#3E2723" />
+        </mesh>
+        <mesh position={[0.15, 1.25, 0.31]}>
+          <boxGeometry args={[0.1, 0.1, 0.05]} />
+          <meshStandardMaterial color="#3E2723" />
+        </mesh>
+
+        {/* Blush */}
+        <mesh position={[-0.2, 1.15, 0.31]}>
+          <boxGeometry args={[0.1, 0.05, 0.05]} />
+          <meshStandardMaterial color="#FF8A80" opacity={0.6} transparent />
+        </mesh>
+        <mesh position={[0.2, 1.15, 0.31]}>
+          <boxGeometry args={[0.1, 0.05, 0.05]} />
+          <meshStandardMaterial color="#FF8A80" opacity={0.6} transparent />
+        </mesh>
+
+        {/* Legs */}
+        <mesh castShadow position={[-0.15, 0.15, 0]}>
+          <cylinderGeometry args={[0.08, 0.08, 0.3]} />
+          <meshStandardMaterial color="#FFCCBC" />
+        </mesh>
+        <mesh castShadow position={[0.15, 0.15, 0]}>
+          <cylinderGeometry args={[0.08, 0.08, 0.3]} />
+          <meshStandardMaterial color="#FFCCBC" />
+        </mesh>
+      </group>
       
       {/* Shadow Blob / Ground indicator */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} receiveShadow>
