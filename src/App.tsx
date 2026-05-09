@@ -1,6 +1,7 @@
 import React, { useMemo, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Sky, KeyboardControls } from '@react-three/drei';
+import { Sky, KeyboardControls, Environment, SoftShadows } from '@react-three/drei';
+import { EffectComposer, SSAO, Bloom } from '@react-three/postprocessing';
 import { Player } from './components/Player';
 import { Puppy } from './components/Puppy';
 import { BuildingSystem } from './components/BuildingSystem';
@@ -104,6 +105,12 @@ function App() {
           
           {/* Building System */}
           <BuildingSystem />
+          
+          {/* Post Processing */}
+          <EffectComposer>
+            <SSAO samples={21} radius={0.1} intensity={15} luminanceInfluence={0.5} color="black" />
+            <Bloom luminanceThreshold={1} mipmapBlur intensity={0.5} />
+          </EffectComposer>
         </KeyboardControls>
       </Canvas>
     </div>

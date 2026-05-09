@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 import { useGameStore } from '../store';
 
@@ -15,18 +16,30 @@ export function BuildingSystem() {
     <>
       {/* Voxel Renderer */}
       {voxels.map((voxel, i) => (
-        <mesh key={i} position={voxel.position} castShadow receiveShadow>
-          <boxGeometry args={[1, 1, 1]} />
-          <meshStandardMaterial color="#8D6E63" /> {/* Wood color */}
-        </mesh>
+        <RoundedBox 
+          key={i} 
+          position={voxel.position} 
+          args={[1, 1, 1]} 
+          radius={0.05} 
+          smoothness={4}
+          castShadow 
+          receiveShadow
+        >
+          <meshPhysicalMaterial 
+            color="#8D6E63" 
+            roughness={0.7} 
+            metalness={0.1}
+            clearcoat={0.1}
+            clearcoatRoughness={0.4}
+          /> {/* Premium Wood color */}
+        </RoundedBox>
       ))}
 
       {/* Hologram / Build Cursor */}
       {buildMode && hoverPos && (
-        <mesh position={hoverPos}>
-          <boxGeometry args={[1.01, 1.01, 1.01]} />
+        <RoundedBox position={hoverPos} args={[1.02, 1.02, 1.02]} radius={0.05} smoothness={4}>
           <meshBasicMaterial color="#ffffff" wireframe transparent opacity={0.5} />
-        </mesh>
+        </RoundedBox>
       )}
 
       {/* Interaction Plane (only active in build mode) */}
