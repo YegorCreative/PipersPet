@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Sky, KeyboardControls } from '@react-three/drei';
 import { Player } from './components/Player';
+import { Puppy } from './components/Puppy';
 
 function App() {
   const keyboardMap = useMemo(() => [
@@ -69,8 +70,9 @@ function App() {
             <meshStandardMaterial color="#2E7D32" />
           </mesh>
 
-          {/* Player & Camera */}
+          {/* Player, Camera, & Pets */}
           <Player />
+          <Puppy />
         </Canvas>
       </div>
     </KeyboardControls>

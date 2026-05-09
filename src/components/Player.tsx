@@ -1,7 +1,7 @@
-import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useKeyboardControls } from '@react-three/drei';
 import * as THREE from 'three';
+import { useGameStore } from '../store';
 
 export function Player() {
   const groupRef = useRef<THREE.Group>(null);
@@ -61,6 +61,9 @@ export function Player() {
     // Apply movement (simulated physics/lerp)
     currentPosition.current.lerp(targetPosition.current, 10 * delta);
     groupRef.current.position.copy(currentPosition.current);
+    
+    // Update global store
+    useGameStore.getState().setPlayerPosition(currentPosition.current.clone());
 
     // Third Person Camera Logic
     // Camera should follow slightly behind and above the player
