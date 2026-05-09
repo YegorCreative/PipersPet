@@ -1,8 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Sky, KeyboardControls } from '@react-three/drei';
 import { Player } from './components/Player';
 import { Puppy } from './components/Puppy';
+import { BuildingSystem } from './components/BuildingSystem';
+import { useGameStore } from './store';
 
 function App() {
   const keyboardMap = useMemo(() => [
@@ -13,43 +15,69 @@ function App() {
     { name: 'jump', keys: ['Space'] },
   ], []);
 
+  const buildMode = useGameStore((state) => state.buildMode);
+  const toggleBuildMode = useGameStore((state) => state.toggleBuildMode);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'b') {
+        toggleBuildMode();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [toggleBuildMode]);
+
   return (
-    <KeyboardControls map={keyboardMap}>
-      <div className="w-full h-full relative">
-        {/* UI Overlay */}
-        <div className="absolute inset-0 pointer-events-none z-10 p-8 flex flex-col justify-between">
-          <div className="glass-panel w-64 p-4 pointer-events-auto">
-            <h1 className="text-white font-bold text-xl mb-2">Paws of Adventure</h1>
-            <div className="space-y-2">
-              <div>
-                <div className="flex justify-between text-xs text-white/80 mb-1">
-                  <span>Health</span>
-                  <span>100/100</span>
-                </div>
-                <div className="w-full bg-black/50 rounded-full h-2">
-                  <div className="bg-red-500 h-2 rounded-full w-full"></div>
-                </div>
+    <div className="w-full h-full relative">
+      {/* UI Overlay */}
+      <div className="absolute inset-0 pointer-events-none z-10 p-8 flex flex-col justify-between">
+        <div className="glass-panel w-64 p-4 pointer-events-auto">
+          <h1 className="text-white font-bold text-xl mb-2">Paws of Adventure</h1>
+          <div className="space-y-2">
+            <div>
+              <div className="flex justify-between text-xs text-white/80 mb-1">
+                <span>Health</span>
+                <span>100/100</span>
               </div>
-              <div>
-                <div className="flex justify-between text-xs text-white/80 mb-1">
-                  <span>Energy</span>
-                  <span>50/50</span>
-                </div>
-                <div className="w-full bg-black/50 rounded-full h-2">
-                  <div className="bg-adventure-blue h-2 rounded-full w-full"></div>
-                </div>
+              <div className="w-full bg-black/50 rounded-full h-2">
+                <div className="bg-red-500 h-2 rounded-full w-full"></div>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-xs text-white/80 mb-1">
+                <span>Energy</span>
+                <span>50/50</span>
+              </div>
+              <div className="w-full bg-black/50 rounded-full h-2">
+                <div className="bg-adventure-blue h-2 rounded-full w-full"></div>
               </div>
             </div>
           </div>
-          
-          <div className="glass-panel w-72 p-4 pointer-events-auto self-end">
-            <p className="text-white/80 text-sm">Use <span className="text-white font-bold">W A S D</span> to move.</p>
-            <p className="text-white/80 text-sm">Use <span className="text-white font-bold">Mouse</span> to look around.</p>
-          </div>
         </div>
+        
+        <div className="glass-panel w-72 p-4 pointer-events-auto self-end">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-white font-bold">Mode:</span>
+            <span className={`px-2 py-1 rounded text-xs font-bold ${buildMode ? 'bg-adventure-orange text-white' : 'bg-white/20 text-white/80'}`}>
+              {buildMode ? 'BUILDING' : 'EXPLORING'}
+            </span>
+          </div>
+          <p className="text-white/80 text-sm mb-1">Press <span className="text-white font-bold bg-white/20 px-1 rounded">B</span> to toggle mode.</p>
+          {buildMode ? (
+            <p className="text-white/80 text-sm">Use <span className="text-white font-bold bg-white/20 px-1 rounded">Mouse Click</span> to build.</p>
+          ) : (
+            <>
+              <p className="text-white/80 text-sm mb-1">Use <span className="text-white font-bold bg-white/20 px-1 rounded">W A S D</span> to move.</p>
+              <p className="text-white/80 text-sm">Use <span className="text-white font-bold bg-white/20 px-1 rounded">Mouse</span> to look.</p>
+            </>
+          )}
+        </div>
+      </div>
 
-        {/* 3D Canvas */}
-        <Canvas shadows camera={{ position: [0, 5, 10], fov: 60 }}>
+      {/* 3D Canvas */}
+      <Canvas shadows camera={{ position: [0, 5, 10], fov: 60 }}>
+        <KeyboardControls map={keyboardMap}>
           <color attach="background" args={['#87CEEB']} />
           
           {/* Environment & Lighting */}
@@ -73,9 +101,12 @@ function App() {
           {/* Player, Camera, & Pets */}
           <Player />
           <Puppy />
-        </Canvas>
-      </div>
-    </KeyboardControls>
+          
+          {/* Building System */}
+          <BuildingSystem />
+        </KeyboardControls>
+      </Canvas>
+    </div>
   );
 }
 
