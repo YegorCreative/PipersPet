@@ -63,7 +63,16 @@ export function BuildingSystem() {
             e.stopPropagation();
             // Check if voxel already exists there
             const exists = voxels.some(v => v.position[0] === hoverPos[0] && v.position[1] === hoverPos[1] && v.position[2] === hoverPos[2]);
-            if (!exists) {
+            
+            // Prevent building directly on the player
+            const playerPos = useGameStore.getState().playerPosition;
+            const dx = hoverPos[0] - playerPos.x;
+            const dz = hoverPos[2] - playerPos.z;
+            const dist = Math.sqrt(dx*dx + dz*dz);
+            // If distance is < 0.8 on XZ plane, they are standing on it
+            const playerOverlap = dist < 0.8;
+
+            if (!exists && !playerOverlap) {
               addVoxel({ position: hoverPos, type: 'timber' });
             }
           }}

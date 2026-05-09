@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useKeyboardControls } from '@react-three/drei';
-import { RigidBody, RapierRigidBody } from '@react-three/rapier';
+import { RigidBody, RapierRigidBody, CapsuleCollider } from '@react-three/rapier';
 import * as THREE from 'three';
 import { useGameStore } from '../store';
 
@@ -62,6 +62,7 @@ export function Player() {
     }
 
     // Apply smooth linear velocity
+    rigidBodyRef.current.wakeUp();
     rigidBodyRef.current.setLinvel(
       { 
         x: THREE.MathUtils.lerp(currentVel.x, targetVelocityX, 10 * delta), 
@@ -73,7 +74,7 @@ export function Player() {
 
     // Jumping
     if (jump && Math.abs(currentVel.y) < 0.1) {
-      rigidBodyRef.current.applyImpulse({ x: 0, y: 1.5, z: 0 }, true);
+      rigidBodyRef.current.applyImpulse({ x: 0, y: 5, z: 0 }, true);
     }
 
     // Get true position from physics body
@@ -94,7 +95,8 @@ export function Player() {
   });
 
   return (
-    <RigidBody ref={rigidBodyRef} type="dynamic" colliders="cuboid" lockRotations position={[0, 2, 0]} mass={1} friction={0.5}>
+    <RigidBody ref={rigidBodyRef} type="dynamic" colliders={false} lockRotations position={[0, 5, 0]} mass={1} friction={0}>
+      <CapsuleCollider args={[0.5, 0.4]} position={[0, 0.9, 0]} />
       {/* Player Model - Voxel Girl */}
       <group ref={meshRef} position={[0, 0, 0]}>
         {/* Body / Dress */}
