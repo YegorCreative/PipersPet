@@ -1,9 +1,8 @@
-import React from 'react';
 import { Environment, Sky, ContactShadows } from '@react-three/drei';
 import { RigidBody } from '@react-three/rapier';
 import { PlayerPlaceholder } from '../Prefabs/PlayerPlaceholder';
 
-export const MainScene: React.FC = () => {
+export const MainScene = () => {
   return (
     <>
       {/* Lighting and Environment */}
