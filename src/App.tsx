@@ -1,11 +1,11 @@
-import React, { useMemo, useEffect } from 'react';
+import { useMemo, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Sky, KeyboardControls, Environment, SoftShadows } from '@react-three/drei';
-import { EffectComposer, SSAO, Bloom } from '@react-three/postprocessing';
-import { Physics, RigidBody } from '@react-three/rapier';
+import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import { Physics } from '@react-three/rapier';
 import { Player } from './components/Player';
 import { Puppy } from './components/Puppy';
-import { BuildingSystem } from './components/BuildingSystem';
+import { Level1_Forest } from './levels/Level1_Forest';
 import { useGameStore } from './store';
 
 function App() {
@@ -17,18 +17,7 @@ function App() {
     { name: 'jump', keys: ['Space'] },
   ], []);
 
-  const buildMode = useGameStore((state) => state.buildMode);
-  const toggleBuildMode = useGameStore((state) => state.toggleBuildMode);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === 'b') {
-        toggleBuildMode();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [toggleBuildMode]);
+  const gameState = useGameStore((state) => state.gameState);
 
   return (
     <div className="w-full h-full relative">
@@ -57,23 +46,24 @@ function App() {
             </div>
           </div>
         </div>
+
+        {/* Mission Complete UI */}
+        {gameState === 'Victory' && (
+          <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center pointer-events-auto backdrop-blur-sm">
+            <h1 className="text-6xl font-black text-white mb-4 drop-shadow-lg">Mission Complete!</h1>
+            <p className="text-xl text-green-300 font-bold mb-8">You found the Lost Puppy!</p>
+            <button 
+              className="px-8 py-4 bg-orange-500 hover:bg-orange-400 text-white font-bold rounded-2xl shadow-[0_4px_0_#c2410c] active:shadow-none active:translate-y-1 transition-all"
+              onClick={() => window.location.reload()}
+            >
+              Play Again
+            </button>
+          </div>
+        )}
         
         <div className="glass-panel w-72 p-4 pointer-events-auto self-end">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-white font-bold">Mode:</span>
-            <span className={`px-2 py-1 rounded text-xs font-bold ${buildMode ? 'bg-adventure-orange text-white' : 'bg-white/20 text-white/80'}`}>
-              {buildMode ? 'BUILDING' : 'EXPLORING'}
-            </span>
-          </div>
-          <p className="text-white/80 text-sm mb-1">Press <span className="text-white font-bold bg-white/20 px-1 rounded">B</span> to toggle mode.</p>
-          {buildMode ? (
-            <p className="text-white/80 text-sm">Use <span className="text-white font-bold bg-white/20 px-1 rounded">Mouse Click</span> to build.</p>
-          ) : (
-            <>
-              <p className="text-white/80 text-sm mb-1">Use <span className="text-white font-bold bg-white/20 px-1 rounded">W A S D</span> to move.</p>
-              <p className="text-white/80 text-sm">Use <span className="text-white font-bold bg-white/20 px-1 rounded">Mouse</span> to look.</p>
-            </>
-          )}
+          <p className="text-white/80 text-sm mb-1">Use <span className="text-white font-bold bg-white/20 px-1 rounded">W A S D</span> to move.</p>
+          <p className="text-white/80 text-sm">Use <span className="text-white font-bold bg-white/20 px-1 rounded">Mouse</span> to look.</p>
         </div>
       </div>
 
@@ -99,25 +89,16 @@ function App() {
           </directionalLight>
 
           <Physics>
-            {/* Ground Plane */}
-            <RigidBody type="fixed" colliders="cuboid">
-              <mesh receiveShadow position={[0, -0.5, 0]}>
-                <boxGeometry args={[100, 1, 100]} />
-                <meshPhysicalMaterial color="#2E7D32" roughness={0.9} metalness={0.1} />
-              </mesh>
-            </RigidBody>
+            {/* Level Geometry */}
+            <Level1_Forest />
 
-            {/* Player, Camera, & Pets */}
+            {/* Player & Mission Target (Puppy) */}
             <Player />
             <Puppy />
-            
-            {/* Building System */}
-            <BuildingSystem />
           </Physics>
           
           {/* Post Processing */}
           <EffectComposer>
-            <SSAO samples={21} radius={0.1} intensity={15} luminanceInfluence={0.5} color="black" />
             <Bloom luminanceThreshold={1} mipmapBlur intensity={0.5} />
           </EffectComposer>
         </KeyboardControls>
