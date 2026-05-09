@@ -1,7 +1,6 @@
-import React from 'react';
 import { useGameManager } from '../Managers/GameManager';
 
-export const HUD: React.FC = () => {
+export const HUD = () => {
   const { score } = useGameManager();
 
   return (

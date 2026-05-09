@@ -1,9 +1,9 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Mesh } from 'three';
 import { RigidBody } from '@react-three/rapier';
 
-export const PlayerPlaceholder: React.FC = () => {
+export const PlayerPlaceholder = () => {
   const meshRef = useRef<Mesh>(null);
 
   // Very simple floating/bobbing animation just so the scene isn't completely static
