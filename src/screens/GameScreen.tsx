@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useGameStore } from '../game/systems/useGameStore';
-import { Tree, Pond, Rock, Flower, WindingPath, PetCorner, TreatAltar } from '../components/MapElements';
+import { Tree, Pond, Rock, Flower, WindingPath, PetCorner, TreatAltar, AmbientParticles } from '../components/MapElements';
+import { Key } from 'lucide-react';
 
 const getDist = (p1: { x: number, y: number }, p2: { x: number, y: number }) => {
   return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
@@ -123,9 +124,11 @@ export const GameScreen: React.FC = () => {
   }, [currentMission, playerPosition, puppyPosition, treatPosition, hasTreat, missionComplete, flowerPositions, keys, activeCommand, keyVisible, hasKey, gateUnlocked, collectTreat, feedPuppy, collectFlower, toyPosition, hasToy, collectToy, revealKey, collectKey, unlockGate, completeMission4, keyPosition, gatePosition, exitPosition]);
 
   return (
-    <div className="w-full h-full bg-[#96c773] relative overflow-hidden shadow-[inset_0_0_100px_rgba(0,0,0,0.2)]">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#ffffff 2px, transparent 2px)', backgroundSize: '60px 60px' }} />
+    <div className="w-full h-full bg-emerald-950 relative overflow-hidden font-sans">
+      {/* Vignette & Fog Overlays */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_rgba(2,6,23,0.8)_100%)] pointer-events-none z-30 mix-blend-multiply" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(8,145,178,0.1)_0%,_transparent_50%)] pointer-events-none z-10" />
+      <AmbientParticles />
 
       {/* Decorative Map Elements */}
       <WindingPath />
@@ -152,20 +155,18 @@ export const GameScreen: React.FC = () => {
       <Rock left="75%" top="45%" scale={1.2} />
       <Rock left="45%" top="75%" scale={0.9} />
       
-      <Flower left="20%" top="40%" color="bg-purple-300" />
-      <Flower left="22%" top="42%" color="bg-pink-300" />
-      <Flower left="60%" top="25%" color="bg-yellow-200" />
-      <Flower left="58%" top="28%" color="bg-orange-300" />
-      <Flower left="70%" top="85%" color="bg-pink-300" />
+      <Flower left="20%" top="40%" color="bg-cyan-500" />
+      <Flower left="22%" top="42%" color="bg-cyan-400" />
+      <Flower left="60%" top="25%" color="bg-amber-500" />
+      <Flower left="58%" top="28%" color="bg-amber-400" />
+      <Flower left="70%" top="85%" color="bg-pink-500" />
 
       {/* Mission 1 */}
       {currentMission === 1 && !hasTreat && (
         <div 
-          className="absolute w-10 h-10 bg-pink-400 rounded-full flex items-center justify-center animate-bounce shadow-lg text-xl border-2 border-white z-20"
-          style={{ left: `${treatPosition.x}%`, top: `${treatPosition.y}%`, transform: 'translate(-50%, -50%)' }}
-        >
-          🦴
-        </div>
+          className="absolute w-6 h-6 bg-amber-400 rounded-sm shadow-[0_0_15px_rgba(251,191,36,0.8)] z-20 animate-slow-pulse rotate-45"
+          style={{ left: `${treatPosition.x}%`, top: `${treatPosition.y}%`, transform: 'translate(-50%, -50%) rotate(45deg)' }}
+        />
       )}
 
       {/* Mission 2 */}
@@ -173,10 +174,10 @@ export const GameScreen: React.FC = () => {
         !flower.collected && (
           <div 
             key={index}
-            className="absolute w-10 h-10 bg-purple-400 rounded-full flex items-center justify-center animate-[bounce_2s_infinite] shadow-lg text-xl border-2 border-white z-20"
+            className="absolute w-6 h-6 bg-pink-500 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(236,72,153,0.8)] z-20 animate-slow-pulse"
             style={{ left: `${flower.pos.x}%`, top: `${flower.pos.y}%`, transform: 'translate(-50%, -50%)' }}
           >
-            🌸
+            <div className="w-2 h-2 bg-white rounded-full opacity-50" />
           </div>
         )
       ))}
@@ -184,10 +185,10 @@ export const GameScreen: React.FC = () => {
       {/* Mission 3 */}
       {currentMission === 3 && !hasToy && (
         <div 
-          className="absolute w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center animate-bounce shadow-lg text-2xl border-2 border-white z-20"
+          className="absolute w-6 h-6 bg-cyan-400 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(34,211,238,0.8)] z-20 animate-bounce"
           style={{ left: `${toyPosition.x}%`, top: `${toyPosition.y}%`, transform: 'translate(-50%, -50%)' }}
         >
-          🎾
+          <div className="w-3 h-3 border border-white/50 rounded-full" />
         </div>
       )}
 
@@ -195,56 +196,64 @@ export const GameScreen: React.FC = () => {
       {currentMission === 4 && (
         <>
           <div 
-            className="absolute w-40 h-10 bg-yellow-300/30 border-t-4 border-yellow-400 rounded-b-xl flex items-center justify-center text-yellow-800 font-bold tracking-widest z-0 animate-pulse"
+            className="absolute w-40 h-10 bg-cyan-900/30 border-t border-cyan-500/50 flex items-center justify-center text-cyan-500 text-xs tracking-[0.3em] font-medium z-0"
             style={{ left: `${exitPosition.x}%`, top: `${exitPosition.y}%`, transform: 'translate(-50%, 0)' }}
           >
             EXIT
           </div>
           
           <div 
-            className={`absolute w-32 h-10 ${gateUnlocked ? 'bg-amber-800/20' : 'bg-slate-800'} rounded-md flex items-center justify-center shadow-lg border-2 ${gateUnlocked ? 'border-amber-900/50' : 'border-slate-900'} z-10 transition-colors duration-1000 text-white font-bold`}
+            className={`absolute w-32 h-10 ${gateUnlocked ? 'bg-cyan-900/10' : 'bg-slate-900/80 backdrop-blur-sm'} flex items-center justify-center shadow-lg border ${gateUnlocked ? 'border-cyan-900/30' : 'border-slate-700'} z-10 transition-colors duration-1000 text-white font-medium tracking-widest text-xs`}
             style={{ left: `${gatePosition.x}%`, top: `${gatePosition.y}%`, transform: 'translate(-50%, -50%)' }}
           >
-            {gateUnlocked ? '🔓 OPEN' : '🔒 LOCKED'}
+            {gateUnlocked ? 'UNSEALED' : 'SEALED'}
           </div>
 
           {!hasKey && (
             <div 
-              className={`absolute w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center shadow-lg text-lg border-2 border-white z-20 transition-all duration-1000 ${keyVisible ? 'opacity-100 animate-bounce scale-100' : 'opacity-0 scale-50'}`}
+              className={`absolute flex items-center justify-center z-20 transition-all duration-1000 ${keyVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
               style={{ left: `${keyPosition.x}%`, top: `${keyPosition.y}%`, transform: 'translate(-50%, -50%)' }}
             >
-              🗝️
+              <div className="absolute w-8 h-8 bg-amber-400 rounded-full blur-md opacity-30 animate-pulse" />
+              <Key className="w-5 h-5 text-amber-400 fill-current drop-shadow-[0_0_5px_rgba(251,191,36,0.8)]" />
             </div>
           )}
         </>
       )}
 
-      {/* Puppy */}
+      {/* Spirit Guide (Puppy) */}
       <div  
-        className={`absolute w-14 h-14 bg-orange-400 rounded-3xl flex items-center justify-center shadow-lg text-3xl border-4 border-white/50 z-20 transition-all duration-300 ${missionComplete ? 'animate-happy-bounce' : 'animate-idle-bounce'}`}
+        className={`absolute w-10 h-10 z-20 transition-all duration-300 ${missionComplete ? 'animate-happy-bounce' : 'animate-idle-bounce'}`}
         style={{ left: `${puppyPosition.x}%`, top: `${puppyPosition.y}%`, transform: 'translate(-50%, -50%)' }}
       >
-        <div className={`absolute -right-3 top-1/2 w-4 h-2 bg-orange-300 rounded-full origin-left ${missionComplete ? 'animate-wag' : 'animate-[tailWag_1s_ease-in-out_infinite_alternate]'}`} />
-        <span className="relative z-10">🐶</span>
+        <div className="absolute inset-0 bg-cyan-400 rounded-full blur-[8px] opacity-40 animate-pulse" />
+        <div className="w-full h-full bg-slate-800 rounded-full border border-cyan-500 flex items-center justify-center shadow-[0_0_15px_rgba(6,182,212,0.3)]">
+           {/* Eyes */}
+           <div className="absolute top-3 left-2 w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" />
+           <div className="absolute top-3 right-2 w-1.5 h-1.5 bg-cyan-300 rounded-full animate-pulse" />
+           {/* Snout */}
+           <div className="absolute bottom-2 w-3 h-2 bg-slate-600 rounded-full" />
+        </div>
 
         {missionComplete && (
           <>
-            <div className="absolute -top-12 whitespace-nowrap text-white font-bold bg-amber-500 px-3 py-1 rounded-full shadow-lg text-sm animate-bounce">
-              {currentMission === 1 ? 'Woof! Thank you! 🦴' : currentMission === 2 ? 'Woof! So pretty! 🌸' : currentMission === 3 ? 'You found my toy! 🎾' : 'Woof! Freedom! ✨'}
+            <div className="absolute -top-12 whitespace-nowrap text-cyan-100 font-medium bg-slate-900/80 backdrop-blur-md px-3 py-1 rounded-full shadow-lg text-xs border border-cyan-800/50 animate-bounce tracking-wide">
+              {currentMission === 1 ? 'Bond Strengthened' : currentMission === 2 ? 'Spirit Calmed' : currentMission === 3 ? 'Artifact Secured' : 'Path Opened'}
             </div>
-            <div className="absolute top-0 text-red-500 animate-float-heart" style={{ left: '20%' }}>❤️</div>
-            <div className="absolute top-0 text-pink-500 animate-float-heart" style={{ left: '80%', animationDelay: '0.2s' }}>💖</div>
-            <div className="absolute top-0 text-red-400 animate-float-heart" style={{ left: '50%', animationDelay: '0.4s' }}>❤️</div>
           </>
         )}
       </div>
 
-      {/* Player */}
+      {/* Player Character */}
       <div 
-        className="absolute w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center shadow-xl border-4 border-white z-30 text-2xl"
+        className="absolute w-10 h-10 z-30 transition-transform duration-100"
         style={{ left: `${playerPosition.x}%`, top: `${playerPosition.y}%`, transform: 'translate(-50%, -50%)' }}
       >
-        🤠
+        <div className="absolute inset-0 bg-slate-900 rounded-full shadow-[0_4px_20px_rgba(0,0,0,0.5)] border border-slate-700 overflow-hidden">
+          {/* Cloak/Hood suggestion */}
+          <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-8 h-8 bg-slate-800 rounded-full" />
+          <div className="absolute bottom-0 w-full h-4 bg-slate-950" />
+        </div>
       </div>
     </div>
   );
