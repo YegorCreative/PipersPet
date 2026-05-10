@@ -4,6 +4,7 @@ export const HUD = () => {
   const coins = useFarmStore((s) => s.coins);
   const carrots = useFarmStore((s) => s.carrots);
   const happiness = useFarmStore((s) => s.puppyHappiness);
+  const day = useFarmStore((s) => s.day);
 
   const happinessColor =
     happiness >= 60 ? '#f43f5e' : happiness >= 30 ? '#fb923c' : '#6b7280';
@@ -12,6 +13,13 @@ export const HUD = () => {
     <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-5 px-6 py-3 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 shadow-xl">
       <span className="font-bold text-white text-base tracking-wide" style={{ fontFamily: 'Outfit, sans-serif' }}>
         🌾 Piper's Farm
+      </span>
+
+      <span
+        className="text-xs font-bold px-2.5 py-0.5 rounded-full"
+        style={{ background: 'rgba(251,191,36,0.2)', color: '#fde68a', border: '1px solid rgba(251,191,36,0.3)' }}
+      >
+        Day {day}
       </span>
 
       <div className="w-px h-5 bg-white/30" />

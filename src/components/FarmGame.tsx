@@ -2,6 +2,7 @@ import { HUD } from './HUD';
 import { CropPatch } from './CropPatch';
 import { Puppy } from './Puppy';
 import { ActionBar } from './ActionBar';
+import { DailyGoals } from './DailyGoals';
 
 export const FarmGame = () => {
   return (
@@ -33,6 +34,9 @@ export const FarmGame = () => {
 
       {/* HUD */}
       <HUD />
+
+      {/* Daily goals panel */}
+      <DailyGoals />
 
       {/* Farm scene — crop + puppy */}
       <div
