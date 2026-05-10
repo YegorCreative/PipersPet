@@ -1,8 +1,9 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export type CropState = 'empty' | 'planted' | 'watered' | 'ready';
 
-export const GROWTH_MS = 30_000; // 30 seconds to grow after watering
+export const GROWTH_MS = 30_000;
 
 interface FarmStore {
   coins: number;
@@ -13,60 +14,133 @@ interface FarmStore {
   puppyHappiness: number;
   puppyFedRecently: boolean;
 
+  day: number;
+  goalPlanted: boolean;
+  goalHarvested: boolean;
+  goalFed: boolean;
+  dayComplete: boolean;
+  dayRewardGiven: boolean;
+
   plantCarrot: () => void;
   waterCrop: () => void;
   harvestCrop: () => void;
   feedPuppy: () => void;
   tick: () => void;
+  startNextDay: () => void;
 }
 
-export const useFarmStore = create<FarmStore>((set, get) => ({
-  coins: 0,
-  carrots: 0,
-  cropState: 'empty',
-  wateredAt: null,
-  growthMs: GROWTH_MS,
-  puppyHappiness: 50,
-  puppyFedRecently: false,
+function allDone(a: boolean, b: boolean, c: boolean) {
+  return a && b && c;
+}
 
-  plantCarrot: () => {
-    if (get().cropState !== 'empty') return;
-    set({ cropState: 'planted', wateredAt: null });
-  },
-
-  waterCrop: () => {
-    if (get().cropState !== 'planted') return;
-    set({ cropState: 'watered', wateredAt: Date.now() });
-  },
-
-  harvestCrop: () => {
-    if (get().cropState !== 'ready') return;
-    set((s) => ({
-      carrots: s.carrots + 3,
-      coins: s.coins + 5,
+export const useFarmStore = create<FarmStore>()(
+  persist(
+    (set, get) => ({
+      coins: 0,
+      carrots: 0,
       cropState: 'empty',
       wateredAt: null,
-    }));
-  },
+      growthMs: GROWTH_MS,
+      puppyHappiness: 50,
+      puppyFedRecently: false,
 
-  feedPuppy: () => {
-    const { carrots, puppyHappiness } = get();
-    if (carrots < 1) return;
-    set({
-      carrots: carrots - 1,
-      puppyHappiness: Math.min(100, puppyHappiness + 20),
-      puppyFedRecently: true,
-      coins: get().coins + 2,
-    });
-    setTimeout(() => set({ puppyFedRecently: false }), 2500);
-  },
+      day: 1,
+      goalPlanted: false,
+      goalHarvested: false,
+      goalFed: false,
+      dayComplete: false,
+      dayRewardGiven: false,
 
-  tick: () => {
-    const { cropState, wateredAt, growthMs } = get();
-    if (cropState === 'watered' && wateredAt !== null) {
-      if (Date.now() - wateredAt >= growthMs) {
-        set({ cropState: 'ready' });
-      }
+      plantCarrot: () => {
+        const s = get();
+        if (s.cropState !== 'empty') return;
+        const goalPlanted = true;
+        const reward = !s.dayRewardGiven && allDone(goalPlanted, s.goalHarvested, s.goalFed);
+        set({
+          cropState: 'planted',
+          wateredAt: null,
+          goalPlanted,
+          ...(reward ? { dayComplete: true, dayRewardGiven: true, coins: s.coins + 25 } : {}),
+        });
+      },
+
+      waterCrop: () => {
+        const s = get();
+        if (s.cropState !== 'planted') return;
+        set({ cropState: 'watered', wateredAt: Date.now() });
+      },
+
+      harvestCrop: () => {
+        const s = get();
+        if (s.cropState !== 'ready') return;
+        const goalHarvested = true;
+        const newCoins = s.coins + 5;
+        const reward = !s.dayRewardGiven && allDone(s.goalPlanted, goalHarvested, s.goalFed);
+        set({
+          carrots: s.carrots + 3,
+          coins: reward ? newCoins + 25 : newCoins,
+          cropState: 'empty',
+          wateredAt: null,
+          goalHarvested,
+          ...(reward ? { dayComplete: true, dayRewardGiven: true } : {}),
+        });
+      },
+
+      feedPuppy: () => {
+        const s = get();
+        if (s.carrots < 1) return;
+        const goalFed = true;
+        const newCoins = s.coins + 2;
+        const reward = !s.dayRewardGiven && allDone(s.goalPlanted, s.goalHarvested, goalFed);
+        set({
+          carrots: s.carrots - 1,
+          coins: reward ? newCoins + 25 : newCoins,
+          puppyHappiness: Math.min(100, s.puppyHappiness + 20),
+          puppyFedRecently: true,
+          goalFed,
+          ...(reward ? { dayComplete: true, dayRewardGiven: true } : {}),
+        });
+        setTimeout(() => set({ puppyFedRecently: false }), 2500);
+      },
+
+      tick: () => {
+        const { cropState, wateredAt, growthMs } = get();
+        if (cropState === 'watered' && wateredAt !== null) {
+          if (Date.now() - wateredAt >= growthMs) {
+            set({ cropState: 'ready' });
+          }
+        }
+      },
+
+      startNextDay: () => {
+        set((s) => ({
+          day: s.day + 1,
+          goalPlanted: false,
+          goalHarvested: false,
+          goalFed: false,
+          dayComplete: false,
+          dayRewardGiven: false,
+          cropState: 'empty',
+          wateredAt: null,
+        }));
+      },
+    }),
+    {
+      name: 'pipers-farm-save',
+      partialize: (s) => ({
+        coins: s.coins,
+        carrots: s.carrots,
+        puppyHappiness: s.puppyHappiness,
+        day: s.day,
+        goalPlanted: s.goalPlanted,
+        goalHarvested: s.goalHarvested,
+        goalFed: s.goalFed,
+        dayComplete: s.dayComplete,
+        dayRewardGiven: s.dayRewardGiven,
+        cropState: s.cropState,
+        wateredAt: s.wateredAt,
+      }),
     }
-  },
-}));
+  )
+);
+
