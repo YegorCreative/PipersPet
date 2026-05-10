@@ -3,7 +3,7 @@ import { useGameStore } from '../game/systems/useGameStore';
 import { PawPrint, Map, Sparkles, Bone, Heart, RotateCcw } from 'lucide-react';
 
 export const MainMenu: React.FC = () => {
-  const { startMission, goToMissions, totalTreats, puppyHappiness, resetProgress } = useGameStore();
+  const { startMission, goToMissions, goToPets, totalTreats, puppyHappiness, resetProgress } = useGameStore();
 
   return (
     <div className="w-full h-full bg-[#96c773] flex flex-col items-center justify-center relative overflow-hidden shadow-[inset_0_0_100px_rgba(0,0,0,0.2)]">
@@ -48,10 +48,10 @@ export const MainMenu: React.FC = () => {
           </button>
           
           <button 
-            disabled
-            className="flex items-center justify-center w-full bg-slate-100 text-slate-400 font-bold text-lg px-10 py-4 rounded-full border-2 border-slate-200 cursor-not-allowed"
+            onClick={() => goToPets()}
+            className="flex items-center justify-center w-full bg-pink-500 hover:bg-pink-600 text-white font-bold text-xl px-10 py-4 rounded-full transition-transform hover:scale-105 shadow-lg shadow-pink-500/30"
           >
-            Pets Coming Soon <Sparkles className="ml-2 w-5 h-5" />
+            Pets <Sparkles className="ml-3 w-5 h-5" />
           </button>
         </div>
 

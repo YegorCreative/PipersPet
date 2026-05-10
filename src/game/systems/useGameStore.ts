@@ -13,7 +13,7 @@ interface GameState {
   puppyHappiness: number;
 
   // Session State
-  currentScreen: 'menu' | 'missions' | 'game';
+  currentScreen: 'menu' | 'missions' | 'game' | 'pets';
   currentMission: number;
   hasTreat: boolean;
   missionComplete: boolean;
@@ -32,6 +32,7 @@ interface GameState {
   resetGame: () => void;
   goToMenu: () => void;
   goToMissions: () => void;
+  goToPets: () => void;
   resetProgress: () => void;
 }
 
@@ -153,6 +154,8 @@ export const useGameStore = create<GameState>()(
       goToMenu: () => set({ currentScreen: 'menu' }),
       
       goToMissions: () => set({ currentScreen: 'missions' }),
+
+      goToPets: () => set({ currentScreen: 'pets' }),
 
       resetProgress: () => set({
         completedMissions: [],
