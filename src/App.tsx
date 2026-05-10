@@ -1,36 +1,12 @@
-import { Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { Physics } from '@react-three/rapier';
-import { KeyboardControls, Loader } from '@react-three/drei';
-import { HUD } from './UI/HUD';
-import { MainScene } from './Scenes/MainScene';
-
-// Define controls for standard movement
-const keyboardMap = [
-  { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
-  { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
-  { name: 'left', keys: ['ArrowLeft', 'KeyA'] },
-  { name: 'right', keys: ['ArrowRight', 'KeyD'] },
-  { name: 'jump', keys: ['Space'] },
-  { name: 'sprint', keys: ['Shift'] },
-];
-
-function App() {
+const App = () => {
   return (
-    <KeyboardControls map={keyboardMap}>
-      <div className="w-screen h-screen overflow-hidden bg-black relative">
-        <Canvas shadows camera={{ position: [0, 5, 10], fov: 60 }}>
-          <Suspense fallback={null}>
-            <Physics>
-              <MainScene />
-            </Physics>
-          </Suspense>
-        </Canvas>
-        <HUD />
-        <Loader />
+    <div className="flex items-center justify-center w-full h-full bg-slate-950 text-white">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold tracking-widest text-slate-100 mb-4">PROJECT PAWS</h1>
+        <p className="text-slate-400 font-mono text-sm">System Ready</p>
       </div>
-    </KeyboardControls>
+    </div>
   );
-}
+};
 
 export default App;
