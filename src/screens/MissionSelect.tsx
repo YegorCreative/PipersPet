@@ -8,48 +8,49 @@ export const MissionSelect: React.FC = () => {
   const missions = [
     {
       id: 1,
-      title: 'Find the Puppy',
-      description: 'Find the puppy and give it a treat!',
-      icon: <Bone className="w-8 h-8 text-amber-500 fill-current" />,
-      color: 'bg-amber-50 border-amber-200 hover:border-amber-400',
+      title: 'The Old Trail',
+      description: 'Buddy senses something hidden near the old trail.',
+      icon: <Bone className="w-8 h-8 text-amber-500/80 fill-current" />,
+      color: 'bg-slate-800/60 border-slate-700/50 hover:border-amber-500/50 hover:bg-slate-800/80',
     },
     {
       id: 2,
-      title: 'Flower Collection',
-      description: 'Collect 3 flowers for the puppy.',
-      icon: <Flower2 className="w-8 h-8 text-purple-500 fill-current" />,
-      color: 'bg-purple-50 border-purple-200 hover:border-purple-400',
+      title: 'Wild Flora',
+      description: 'Gather wild flora to calm the spirit.',
+      icon: <Flower2 className="w-8 h-8 text-pink-500/80 fill-current" />,
+      color: 'bg-slate-800/60 border-slate-700/50 hover:border-pink-500/50 hover:bg-slate-800/80',
     },
     {
       id: 3,
-      title: 'Find Buddy\'s Toy',
-      description: 'Find Buddy\'s lost toy.',
-      icon: <Dribbble className="w-8 h-8 text-blue-500 fill-current" />,
-      color: 'bg-blue-50 border-blue-200 hover:border-blue-400',
+      title: 'The Lost Artifact',
+      description: 'A lost artifact lies somewhere in the ruins.',
+      icon: <Dribbble className="w-8 h-8 text-cyan-500/80 fill-current" />,
+      color: 'bg-slate-800/60 border-slate-700/50 hover:border-cyan-500/50 hover:bg-slate-800/80',
     },
     {
       id: 4,
       title: 'The Hidden Key',
-      description: 'Use Buddy to find the hidden key.',
-      icon: <Key className="w-8 h-8 text-amber-600 fill-current" />,
-      color: 'bg-amber-100 border-amber-300 hover:border-amber-500',
+      description: 'Use Buddy\'s instinct to reveal the hidden key.',
+      icon: <Key className="w-8 h-8 text-yellow-500/80 fill-current" />,
+      color: 'bg-slate-800/60 border-slate-700/50 hover:border-yellow-500/50 hover:bg-slate-800/80',
     }
   ];
 
   return (
-    <div className="w-full h-full bg-[#96c773] flex flex-col items-center py-12 px-6 relative overflow-y-auto shadow-[inset_0_0_100px_rgba(0,0,0,0.2)]">
-      <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#ffffff 2px, transparent 2px)', backgroundSize: '60px 60px' }} />
+    <div className="w-full h-full bg-slate-950 flex flex-col items-center py-12 px-6 relative overflow-y-auto font-sans">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 fixed" />
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-20 mix-blend-overlay fixed" />
       
-      <div className="bg-white/90 backdrop-blur-md px-12 py-10 rounded-[3rem] shadow-2xl border-4 border-white w-full max-w-2xl z-10 animate-[zoomIn_0.3s_ease-out_forwards]">
+      <div className="bg-slate-900/60 backdrop-blur-xl px-12 py-10 rounded-[2.5rem] shadow-2xl border border-slate-700/50 w-full max-w-2xl z-10 animate-[zoomIn_0.6s_ease-out_forwards]">
         
-        <div className="flex items-center mb-8 relative">
+        <div className="flex items-center mb-10 relative">
           <button 
             onClick={() => goToMenu()}
-            className="absolute left-0 p-3 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-600 transition-colors"
+            className="absolute left-0 p-3 bg-slate-800/50 hover:bg-slate-700 rounded-full text-slate-300 transition-colors border border-slate-700"
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-4xl font-extrabold text-slate-800 w-full text-center">Select Mission</h1>
+          <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-200 to-slate-400 w-full text-center tracking-wide uppercase">Quest Log</h1>
         </div>
         
         <div className="flex flex-col space-y-4">
@@ -57,21 +58,21 @@ export const MissionSelect: React.FC = () => {
             <button
               key={mission.id}
               onClick={() => startMission(mission.id)}
-              className={`flex items-center p-6 rounded-3xl border-4 text-left transition-transform hover:scale-[1.02] ${mission.color}`}
+              className={`flex items-center w-full text-left p-6 rounded-2xl border transition-all duration-300 group hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] hover:-translate-y-1 ${mission.color}`}
             >
-              <div className="bg-white p-4 rounded-2xl shadow-sm mr-6">
+              <div className="bg-slate-900/80 p-4 rounded-xl shadow-inner mr-6 border border-slate-700 group-hover:scale-110 transition-transform duration-500">
                 {mission.icon}
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-2xl font-bold text-slate-800 mb-1">Mission {mission.id}: {mission.title}</h3>
+                  <h3 className="text-xl font-bold text-slate-100 mb-1 tracking-wide">Quest {mission.id}: {mission.title}</h3>
                   {completedMissions.includes(mission.id) && (
-                    <div className="flex items-center space-x-1 bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-bold">
-                      <CheckCircle2 className="w-4 h-4" /> <span>Completed</span>
+                    <div className="flex items-center space-x-1.5 bg-cyan-900/40 text-cyan-400 px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold border border-cyan-800/50">
+                      <CheckCircle2 className="w-3 h-3" /> <span>Fulfilled</span>
                     </div>
                   )}
                 </div>
-                <p className="text-slate-600 font-medium">{mission.description}</p>
+                <p className="text-slate-400 font-light text-sm tracking-wide">{mission.description}</p>
               </div>
             </button>
           ))}

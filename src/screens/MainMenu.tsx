@@ -6,65 +6,70 @@ export const MainMenu: React.FC = () => {
   const { startMission, goToMissions, goToPets, totalTreats, puppyHappiness, resetProgress } = useGameStore();
 
   return (
-    <div className="w-full h-full bg-[#96c773] flex flex-col items-center justify-center relative overflow-hidden shadow-[inset_0_0_100px_rgba(0,0,0,0.2)]">
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#ffffff 2px, transparent 2px)', backgroundSize: '60px 60px' }} />
+    <div className="w-full h-full bg-slate-950 flex flex-col items-center justify-center relative overflow-hidden font-sans">
+      {/* Cinematic Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-900/40 via-slate-950 to-slate-950" />
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-20 mix-blend-overlay" />
       
-      <div className="bg-white/90 backdrop-blur-md px-16 py-12 rounded-[3rem] shadow-2xl border-4 border-white flex flex-col items-center z-10 animate-[zoomIn_0.5s_ease-out_forwards]">
+      {/* Ambient glowing orbs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px] animate-ambient-drift" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-[100px] animate-ambient-drift" style={{ animationDelay: '-10s' }} />
+
+      <div className="bg-slate-900/60 backdrop-blur-xl px-16 py-14 rounded-3xl shadow-2xl border border-slate-700/50 flex flex-col items-center z-10 animate-[zoomIn_0.8s_ease-out_forwards]">
         
-        <div className="flex items-center justify-center mb-6 text-orange-400 animate-bounce">
-          <PawPrint className="w-20 h-20 fill-current" />
+        <div className="flex items-center justify-center mb-8 text-cyan-400 opacity-90">
+          <PawPrint className="w-16 h-16 fill-current animate-slow-pulse" />
         </div>
         
-        <h1 className="text-6xl font-extrabold text-slate-800 mb-2 tracking-tight text-center">Paws of <br/> Adventure</h1>
-        <p className="text-xl text-slate-500 mb-6 font-medium">A cozy pet rescue game</p>
+        <h1 className="text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-slate-100 to-slate-400 mb-3 tracking-tight text-center drop-shadow-sm">Paws of <br/> Adventure</h1>
+        <p className="text-lg text-slate-400 mb-10 font-medium tracking-wide uppercase">An Indie Exploration Game</p>
         
         {/* Progress Display */}
-        <div className="flex space-x-6 mb-8">
-          <div className="flex items-center space-x-2 bg-amber-50 px-4 py-2 rounded-2xl border border-amber-200 shadow-sm">
-            <Bone className="w-6 h-6 text-amber-500 fill-current" />
-            <span className="font-bold text-amber-700 text-lg">{totalTreats}</span>
+        <div className="flex space-x-6 mb-10">
+          <div className="flex items-center space-x-3 bg-slate-800/50 px-5 py-2.5 rounded-2xl border border-slate-700/50 shadow-inner">
+            <Bone className="w-5 h-5 text-amber-400/80 fill-current" />
+            <span className="font-bold text-slate-200 text-lg">{totalTreats}</span>
           </div>
-          <div className="flex items-center space-x-2 bg-pink-50 px-4 py-2 rounded-2xl border border-pink-200 shadow-sm">
-            <Heart className="w-6 h-6 text-pink-500 fill-current" />
-            <span className="font-bold text-pink-700 text-lg">{puppyHappiness}</span>
+          <div className="flex items-center space-x-3 bg-slate-800/50 px-5 py-2.5 rounded-2xl border border-slate-700/50 shadow-inner">
+            <Heart className="w-5 h-5 text-pink-500/80 fill-current" />
+            <span className="font-bold text-slate-200 text-lg">{puppyHappiness}</span>
           </div>
         </div>
         
         <div className="flex flex-col w-full space-y-4 mb-8">
           <button 
             onClick={() => startMission(1)}
-            className="group relative flex items-center justify-center w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-2xl px-10 py-5 rounded-full transition-transform hover:scale-105 shadow-lg shadow-emerald-500/30 overflow-hidden"
+            className="group relative flex items-center justify-center w-full bg-cyan-600/90 hover:bg-cyan-500 text-white font-bold text-xl px-10 py-4 rounded-full transition-all shadow-[0_0_20px_rgba(8,145,178,0.2)] hover:shadow-[0_0_30px_rgba(8,145,178,0.4)] overflow-hidden border border-cyan-400/30"
           >
-            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-            <span className="relative z-10 flex items-center">Play <PawPrint className="ml-3 w-6 h-6" /></span>
+            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            <span className="relative z-10 flex items-center tracking-wide">Enter the Wilds <PawPrint className="ml-3 w-5 h-5" /></span>
           </button>
           
           <button 
             onClick={() => goToMissions()}
-            className="flex items-center justify-center w-full bg-blue-500 hover:bg-blue-600 text-white font-bold text-xl px-10 py-4 rounded-full transition-transform hover:scale-105 shadow-lg shadow-blue-500/30"
+            className="flex items-center justify-center w-full bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-medium text-lg px-10 py-4 rounded-full transition-all border border-slate-700 hover:border-slate-500"
           >
-            Missions <Map className="ml-3 w-5 h-5" />
+            Quest Log <Map className="ml-3 w-4 h-4 text-slate-400" />
           </button>
           
           <button 
             onClick={() => goToPets()}
-            className="flex items-center justify-center w-full bg-pink-500 hover:bg-pink-600 text-white font-bold text-xl px-10 py-4 rounded-full transition-transform hover:scale-105 shadow-lg shadow-pink-500/30"
+            className="flex items-center justify-center w-full bg-slate-800/80 hover:bg-slate-700 text-slate-200 font-medium text-lg px-10 py-4 rounded-full transition-all border border-slate-700 hover:border-slate-500"
           >
-            Pets <Sparkles className="ml-3 w-5 h-5" />
+            Companions <Sparkles className="ml-3 w-4 h-4 text-slate-400" />
           </button>
         </div>
 
         {/* Reset Progress */}
         <button 
           onClick={() => {
-            if (window.confirm('Are you sure you want to reset all your progress?')) {
+            if (window.confirm('Are you sure you want to forsake this journey and start anew?')) {
               resetProgress();
             }
           }}
-          className="flex items-center space-x-2 text-slate-400 hover:text-red-500 transition-colors mt-2 text-sm font-bold"
+          className="flex items-center space-x-2 text-slate-600 hover:text-red-400/80 transition-colors mt-4 text-xs font-semibold tracking-wider uppercase"
         >
-          <RotateCcw className="w-4 h-4" /> <span>Reset Progress</span>
+          <RotateCcw className="w-3 h-3" /> <span>Reset Journey</span>
         </button>
       </div>
     </div>

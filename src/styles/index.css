@@ -4,7 +4,11 @@
 
 @layer base {
   html, body, #root {
-    @apply m-0 p-0 w-full h-full bg-black text-white overflow-hidden font-sans;
+    @apply m-0 p-0 w-full h-full bg-slate-950 text-slate-100 overflow-hidden;
+    font-family: 'Inter', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
   }
 }
 
@@ -20,6 +24,12 @@
   }
   .animate-happy-bounce {
     animation: happyBounce 0.4s cubic-bezier(0.28, 0.84, 0.42, 1) infinite alternate;
+  }
+  .animate-ambient-drift {
+    animation: ambientDrift 20s linear infinite;
+  }
+  .animate-slow-pulse {
+    animation: slowPulse 4s ease-in-out infinite;
   }
 }
 
@@ -45,8 +55,19 @@
 }
 
 @keyframes zoomIn {
-  0% { transform: scale(0.5); opacity: 0; }
-  80% { transform: scale(1.05); opacity: 1; }
-  100% { transform: scale(1); opacity: 1; }
+  0% { transform: scale(0.95); opacity: 0; filter: blur(4px); }
+  100% { transform: scale(1); opacity: 1; filter: blur(0); }
+}
+
+@keyframes ambientDrift {
+  0% { transform: translateY(0) translateX(0); }
+  33% { transform: translateY(-10px) translateX(15px); }
+  66% { transform: translateY(10px) translateX(-5px); }
+  100% { transform: translateY(0) translateX(0); }
+}
+
+@keyframes slowPulse {
+  0%, 100% { opacity: 0.6; filter: brightness(1); }
+  50% { opacity: 1; filter: brightness(1.2); }
 }
 

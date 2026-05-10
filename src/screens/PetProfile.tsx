@@ -6,64 +6,69 @@ export const PetProfile: React.FC = () => {
   const { goToMenu, totalTreats, puppyHappiness, completedMissions } = useGameStore();
 
   return (
-    <div className="w-full h-full bg-[#96c773] flex flex-col items-center justify-center relative overflow-hidden shadow-[inset_0_0_100px_rgba(0,0,0,0.2)]">
-      <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#ffffff 2px, transparent 2px)', backgroundSize: '60px 60px' }} />
-      
-      <div className="bg-white/90 backdrop-blur-md px-12 py-10 rounded-[3rem] shadow-2xl border-4 border-white w-full max-w-xl z-10 animate-[zoomIn_0.3s_ease-out_forwards]">
+    <div className="w-full h-full bg-slate-950 flex flex-col items-center justify-center relative overflow-hidden font-sans">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-cyan-900/20 via-slate-950 to-slate-950" />
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-20 mix-blend-overlay" />
+
+      <div className="bg-slate-900/60 backdrop-blur-xl px-12 py-10 rounded-[2.5rem] shadow-2xl border border-slate-700/50 w-full max-w-xl z-10 animate-[zoomIn_0.6s_ease-out_forwards]">
         
         <div className="flex items-center mb-10 relative">
           <button 
             onClick={() => goToMenu()}
-            className="absolute left-0 p-3 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-600 transition-colors"
+            className="absolute left-0 p-3 bg-slate-800/50 hover:bg-slate-700 rounded-full text-slate-300 transition-colors border border-slate-700"
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-4xl font-extrabold text-slate-800 w-full text-center">My Pets</h1>
+          <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-200 to-slate-400 w-full text-center tracking-wide">COMPANION</h1>
         </div>
         
         <div className="flex flex-col items-center">
           {/* Avatar Area */}
-          <div className="relative mb-6">
-            <div className="w-40 h-40 bg-orange-100 rounded-full border-8 border-orange-300 flex items-center justify-center shadow-inner overflow-hidden">
-              {/* Pet representation */}
-              <div className="w-24 h-24 bg-orange-400 rounded-3xl flex items-center justify-center text-6xl shadow-lg border-4 border-white/50 animate-idle-bounce">
-                🐶
+          <div className="relative mb-8">
+            <div className="w-40 h-40 bg-slate-800/80 rounded-full border border-cyan-500/30 flex items-center justify-center shadow-[0_0_30px_rgba(6,182,212,0.1)] overflow-hidden">
+              <div className="w-24 h-24 bg-gradient-to-br from-cyan-400/20 to-cyan-600/10 rounded-full flex items-center justify-center border border-cyan-400/40 animate-slow-pulse">
+                 {/* Stylized geometric pet icon instead of emoji */}
+                 <div className="relative w-12 h-12">
+                   <div className="absolute top-2 left-2 w-3 h-3 bg-cyan-400 rounded-full blur-[2px] animate-pulse" />
+                   <div className="absolute top-2 right-2 w-3 h-3 bg-cyan-400 rounded-full blur-[2px] animate-pulse" style={{ animationDelay: '0.2s' }} />
+                   <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-4 h-3 bg-slate-400/50 rounded-full" />
+                 </div>
               </div>
             </div>
-            {/* Sparkles */}
-            <div className="absolute -top-2 -right-2 text-3xl animate-bounce">✨</div>
-            <div className="absolute top-10 -left-6 text-2xl animate-bounce" style={{ animationDelay: '0.5s' }}>✨</div>
+            {/* Ethereal Sparkles */}
+            <div className="absolute -top-2 -right-2 w-2 h-2 bg-cyan-300 rounded-full blur-[1px] animate-pulse" />
+            <div className="absolute top-10 -left-6 w-1 h-1 bg-cyan-200 rounded-full blur-[1px] animate-pulse" style={{ animationDelay: '0.5s' }} />
           </div>
 
-          <h2 className="text-4xl font-extrabold text-slate-800 mb-2">Buddy</h2>
-          <span className="bg-orange-100 text-orange-700 px-4 py-1 rounded-full text-sm font-bold uppercase tracking-wider mb-8">
-            Golden Puppy
+          <h2 className="text-4xl font-bold text-slate-100 mb-2 tracking-tight">Spirit Guide</h2>
+          <span className="text-cyan-400/80 text-xs font-semibold uppercase tracking-[0.2em] mb-10">
+            Loyal Familiar
           </span>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-4 w-full">
-            <div className="bg-pink-50 p-6 rounded-3xl border-2 border-pink-200 flex flex-col items-center justify-center">
-              <Heart className="w-10 h-10 text-pink-500 fill-current mb-2" />
-              <div className="text-3xl font-extrabold text-pink-700">{puppyHappiness}</div>
-              <div className="text-pink-600 font-medium text-sm mt-1 uppercase tracking-wide">Happiness</div>
+            <div className="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50 flex flex-col items-center justify-center">
+              <Heart className="w-8 h-8 text-pink-500/70 fill-current mb-3" />
+              <div className="text-3xl font-light text-slate-200 mb-1">{puppyHappiness}</div>
+              <div className="text-slate-500 text-[10px] uppercase tracking-[0.15em] font-semibold">Bond Strength</div>
             </div>
 
-            <div className="bg-amber-50 p-6 rounded-3xl border-2 border-amber-200 flex flex-col items-center justify-center">
-              <Bone className="w-10 h-10 text-amber-500 fill-current mb-2" />
-              <div className="text-3xl font-extrabold text-amber-700">{totalTreats}</div>
-              <div className="text-amber-600 font-medium text-sm mt-1 uppercase tracking-wide">Treats Earned</div>
+            <div className="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50 flex flex-col items-center justify-center">
+              <Bone className="w-8 h-8 text-amber-500/70 fill-current mb-3" />
+              <div className="text-3xl font-light text-slate-200 mb-1">{totalTreats}</div>
+              <div className="text-slate-500 text-[10px] uppercase tracking-[0.15em] font-semibold">Offerings Found</div>
             </div>
           </div>
 
           {/* Additional Info */}
-          <div className="mt-4 w-full bg-slate-50 p-6 rounded-3xl border-2 border-slate-100 flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="bg-emerald-100 p-3 rounded-2xl">
-                <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+          <div className="mt-4 w-full bg-cyan-900/10 p-5 rounded-2xl border border-cyan-800/30 flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="bg-cyan-900/30 p-2.5 rounded-xl border border-cyan-800/50">
+                <CheckCircle2 className="w-5 h-5 text-cyan-500" />
               </div>
-              <span className="font-bold text-slate-700 text-lg">Missions Completed</span>
+              <span className="font-medium text-slate-300 tracking-wide">Quests Completed</span>
             </div>
-            <span className="text-2xl font-extrabold text-emerald-600">{completedMissions.length}</span>
+            <span className="text-2xl font-light text-cyan-400">{completedMissions.length}</span>
           </div>
 
         </div>
