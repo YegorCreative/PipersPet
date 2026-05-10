@@ -16,10 +16,12 @@ interface GameState {
   currentScreen: 'menu' | 'missions' | 'game' | 'pets';
   currentMission: number;
   hasTreat: boolean;
+  hasToy: boolean;
   missionComplete: boolean;
   playerPosition: Position;
   puppyPosition: Position;
   treatPosition: Position;
+  toyPosition: Position;
   flowersCollected: number;
   flowerPositions: { pos: Position; collected: boolean }[];
 
@@ -27,6 +29,7 @@ interface GameState {
   collectTreat: () => void;
   feedPuppy: () => void;
   collectFlower: (index: number) => void;
+  collectToy: () => void;
   startMission: (missionNumber: number) => void;
   startNextMission: () => void;
   resetGame: () => void;
@@ -39,6 +42,7 @@ interface GameState {
 const INITIAL_PLAYER = { x: 50, y: 50 };
 const INITIAL_PUPPY = { x: 80, y: 80 };
 const INITIAL_TREAT = { x: 20, y: 20 };
+const INITIAL_TOY = { x: 20, y: 85 };
 const INITIAL_FLOWERS = [
   { pos: { x: 30, y: 70 }, collected: false },
   { pos: { x: 70, y: 30 }, collected: false },
@@ -55,10 +59,12 @@ export const useGameStore = create<GameState>()(
       currentScreen: 'menu',
       currentMission: 1,
       hasTreat: false,
+      hasToy: false,
       missionComplete: false,
       playerPosition: INITIAL_PLAYER,
       puppyPosition: INITIAL_PUPPY,
       treatPosition: INITIAL_TREAT,
+      toyPosition: INITIAL_TOY,
       flowersCollected: 0,
       flowerPositions: INITIAL_FLOWERS,
       
