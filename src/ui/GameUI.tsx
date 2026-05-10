@@ -1,9 +1,9 @@
 import React from 'react';
-import { Bone, CheckCircle2 } from 'lucide-react';
+import { Bone, Star } from 'lucide-react';
 import { useGameStore } from '../game/systems/useGameStore';
 
 export const GameUI: React.FC = () => {
-  const { hasTreat, missionComplete, playerPosition, puppyPosition } = useGameStore();
+  const { hasTreat, missionComplete, playerPosition, puppyPosition, resetGame } = useGameStore();
 
   const getDist = (p1: { x: number, y: number }, p2: { x: number, y: number }) => {
     return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
@@ -28,19 +28,40 @@ export const GameUI: React.FC = () => {
 
       {/* Center: Mission Complete */}
       {missionComplete && (
-        <div className="absolute inset-0 flex items-center justify-center bg-white/40 backdrop-blur-sm pointer-events-auto">
-          <div className="bg-white px-10 py-8 rounded-[2rem] shadow-2xl border border-emerald-100 text-center animate-bounce">
-            <div className="flex justify-center mb-4">
-              <CheckCircle2 className="w-16 h-16 text-emerald-500" />
+        <div className="absolute inset-0 flex items-center justify-center bg-slate-900/40 backdrop-blur-md pointer-events-auto z-50">
+          {/* Confetti / Celebration burst background effect */}
+          <div className="absolute w-[600px] h-[600px] bg-yellow-300/20 rounded-full blur-3xl animate-pulse" />
+          
+          <div className="bg-white px-12 py-10 rounded-[3rem] shadow-2xl border-4 border-amber-100 text-center relative animate-[zoomIn_0.5s_ease-out_forwards] transform scale-0">
+            {/* Stars */}
+            <div className="flex justify-center space-x-2 mb-6">
+              <Star className="w-12 h-12 text-yellow-400 fill-current animate-[bounce_1s_ease-in-out_infinite]" style={{ animationDelay: '0ms' }} />
+              <Star className="w-16 h-16 text-yellow-400 fill-current animate-[bounce_1s_ease-in-out_infinite]" style={{ animationDelay: '200ms' }} />
+              <Star className="w-12 h-12 text-yellow-400 fill-current animate-[bounce_1s_ease-in-out_infinite]" style={{ animationDelay: '400ms' }} />
             </div>
-            <h1 className="text-4xl font-extrabold text-slate-800 mb-2">Mission Complete!</h1>
-            <p className="text-lg text-slate-600 mb-6">You fed the puppy. Great job!</p>
-            <button 
-              onClick={() => window.location.reload()}
-              className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xl px-8 py-4 rounded-full transition-colors shadow-lg shadow-emerald-500/30"
-            >
-              Play Again
-            </button>
+
+            <h1 className="text-5xl font-extrabold text-slate-800 mb-4 tracking-tight">Mission Complete!</h1>
+            <p className="text-xl text-slate-600 mb-6 font-medium">Great job! The puppy is very happy.</p>
+            
+            <div className="bg-amber-50 rounded-2xl py-4 px-6 mb-8 border-2 border-amber-200 shadow-inner flex items-center justify-center space-x-3">
+              <Bone className="w-8 h-8 text-amber-500 fill-current" />
+              <span className="text-xl font-bold text-amber-700">You earned 1 Puppy Treat!</span>
+            </div>
+
+            <div className="flex flex-col space-y-3">
+              <button 
+                onClick={() => resetGame()}
+                className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xl px-8 py-4 rounded-full transition-transform hover:scale-105 shadow-lg shadow-emerald-500/30"
+              >
+                Play Again
+              </button>
+              <button 
+                disabled
+                className="bg-slate-100 text-slate-400 font-bold text-lg px-8 py-4 rounded-full border-2 border-slate-200 cursor-not-allowed"
+              >
+                Next Mission Coming Soon
+              </button>
+            </div>
           </div>
         </div>
       )}
