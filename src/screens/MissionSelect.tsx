@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGameStore } from '../game/systems/useGameStore';
-import { ArrowLeft, Bone, Flower2, CheckCircle2, Dribbble } from 'lucide-react';
+import { ArrowLeft, Bone, Flower2, CheckCircle2, Dribbble, Key } from 'lucide-react';
 
 export const MissionSelect: React.FC = () => {
   const { startMission, goToMenu, completedMissions } = useGameStore();
@@ -26,11 +26,18 @@ export const MissionSelect: React.FC = () => {
       description: 'Find Buddy\'s lost toy.',
       icon: <Dribbble className="w-8 h-8 text-blue-500 fill-current" />,
       color: 'bg-blue-50 border-blue-200 hover:border-blue-400',
+    },
+    {
+      id: 4,
+      title: 'The Hidden Key',
+      description: 'Use Buddy to find the hidden key.',
+      icon: <Key className="w-8 h-8 text-amber-600 fill-current" />,
+      color: 'bg-amber-100 border-amber-300 hover:border-amber-500',
     }
   ];
 
   return (
-    <div className="w-full h-full bg-[#96c773] flex flex-col items-center justify-center relative overflow-hidden shadow-[inset_0_0_100px_rgba(0,0,0,0.2)]">
+    <div className="w-full h-full bg-[#96c773] flex flex-col items-center py-12 px-6 relative overflow-y-auto shadow-[inset_0_0_100px_rgba(0,0,0,0.2)]">
       <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#ffffff 2px, transparent 2px)', backgroundSize: '60px 60px' }} />
       
       <div className="bg-white/90 backdrop-blur-md px-12 py-10 rounded-[3rem] shadow-2xl border-4 border-white w-full max-w-2xl z-10 animate-[zoomIn_0.3s_ease-out_forwards]">
