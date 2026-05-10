@@ -1,27 +1,17 @@
 
-import { GameScreen } from './screens/GameScreen';
-import { MainMenu } from './screens/MainMenu';
-import { MissionSelect } from './screens/MissionSelect';
-import { PetProfile } from './screens/PetProfile';
-import { GameUI } from './ui/GameUI';
-import { useGameStore } from './game/systems/useGameStore';
+import { useEffect } from 'react';
+import { FarmGame } from './components/FarmGame';
+import { useFarmStore } from './game/useFarmStore';
 
 const App = () => {
-  const currentScreen = useGameStore((state) => state.currentScreen);
+  const tick = useFarmStore((s) => s.tick);
 
-  return (
-    <div className="relative w-full h-screen overflow-hidden bg-slate-900 font-sans">
-      {currentScreen === 'menu' && <MainMenu />}
-      {currentScreen === 'missions' && <MissionSelect />}
-      {currentScreen === 'pets' && <PetProfile />}
-      {currentScreen === 'game' && (
-        <>
-          <GameUI />
-          <GameScreen />
-        </>
-      )}
-    </div>
-  );
+  useEffect(() => {
+    const id = setInterval(tick, 500);
+    return () => clearInterval(id);
+  }, [tick]);
+
+  return <FarmGame />;
 };
 
 export default App;
