@@ -10,7 +10,7 @@ export const Player: React.FC = () => {
   const meshRef = useRef<Mesh>(null);
   const [, get] = useKeyboardControls();
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (!meshRef.current) return;
     const { forward, backward, left, right } = get();
 
