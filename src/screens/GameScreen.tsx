@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useGameStore } from '../game/systems/useGameStore';
+import { Tree, Pond, Rock, Flower, WindingPath, PetCorner, TreatAltar } from '../components/MapElements';
 
 export const GameScreen: React.FC = () => {
   const { playerPosition, puppyPosition, treatPosition, hasTreat, movePlayer, collectTreat, feedPuppy } = useGameStore();
@@ -50,42 +51,72 @@ export const GameScreen: React.FC = () => {
       }
     }
 
-    // Puppy feed (if 'e' is pressed)
+    // Puppy feed
     if (keys['e'] || keys['E']) {
       if (getDist(playerPosition, puppyPosition) < 10 && hasTreat) {
         feedPuppy();
-        // clear 'e' key state to prevent spam
         setKeys((k) => ({ ...k, e: false, E: false }));
       }
     }
   }, [playerPosition, treatPosition, puppyPosition, hasTreat, keys, collectTreat, feedPuppy]);
 
   return (
-    <div className="w-full h-full bg-[#a7d188] relative overflow-hidden">
-      {/* Floor pattern (optional cozy touch) */}
-      <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#ffffff 2px, transparent 2px)', backgroundSize: '40px 40px' }} />
+    <div className="w-full h-full bg-[#96c773] relative overflow-hidden shadow-[inset_0_0_100px_rgba(0,0,0,0.2)]">
+      {/* Background pattern */}
+      <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(#ffffff 2px, transparent 2px)', backgroundSize: '60px 60px' }} />
 
-      {/* Treat */}
+      {/* Decorative Map Elements */}
+      <WindingPath />
+      <Pond left="85%" top="15%" />
+      <PetCorner left="80%" top="80%" />
+      <TreatAltar left="20%" top="20%" />
+
+      {/* Trees framing the map */}
+      <Tree left="5%" top="10%" scale={1.2} />
+      <Tree left="15%" top="5%" scale={0.9} />
+      <Tree left="40%" top="8%" scale={1.1} />
+      <Tree left="60%" top="5%" scale={1} />
+      <Tree left="95%" top="15%" scale={1.3} />
+      
+      <Tree left="5%" top="40%" scale={1} />
+      <Tree left="3%" top="70%" scale={1.2} />
+      <Tree left="10%" top="95%" scale={0.8} />
+      
+      <Tree left="30%" top="90%" scale={1.1} />
+      <Tree left="50%" top="95%" scale={1} />
+      <Tree left="90%" top="95%" scale={1.2} />
+      <Tree left="95%" top="60%" scale={0.9} />
+
+      {/* Rocks and Flowers scattered */}
+      <Rock left="25%" top="30%" scale={0.8} />
+      <Rock left="75%" top="45%" scale={1.2} />
+      <Rock left="45%" top="75%" scale={0.9} />
+      
+      <Flower left="20%" top="40%" color="bg-purple-300" />
+      <Flower left="22%" top="42%" color="bg-pink-300" />
+      <Flower left="60%" top="25%" color="bg-yellow-200" />
+      <Flower left="58%" top="28%" color="bg-orange-300" />
+      <Flower left="70%" top="85%" color="bg-pink-300" />
+
+      {/* Interactive Entities */}
       {!hasTreat && (
         <div 
-          className="absolute w-8 h-8 bg-pink-400 rounded-full flex items-center justify-center animate-bounce shadow-lg text-lg border-2 border-white"
+          className="absolute w-10 h-10 bg-pink-400 rounded-full flex items-center justify-center animate-bounce shadow-lg text-xl border-2 border-white z-20"
           style={{ left: `${treatPosition.x}%`, top: `${treatPosition.y}%`, transform: 'translate(-50%, -50%)' }}
         >
           🦴
         </div>
       )}
 
-      {/* Puppy */}
       <div 
-        className="absolute w-12 h-12 bg-orange-400 rounded-2xl flex items-center justify-center shadow-lg text-2xl border-4 border-white/50"
+        className="absolute w-14 h-14 bg-orange-400 rounded-3xl flex items-center justify-center shadow-lg text-3xl border-4 border-white/50 z-20 transition-all duration-300"
         style={{ left: `${puppyPosition.x}%`, top: `${puppyPosition.y}%`, transform: 'translate(-50%, -50%)' }}
       >
         🐶
       </div>
 
-      {/* Player */}
       <div 
-        className="absolute w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center shadow-xl border-4 border-white z-10 text-2xl"
+        className="absolute w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center shadow-xl border-4 border-white z-30 text-2xl"
         style={{ left: `${playerPosition.x}%`, top: `${playerPosition.y}%`, transform: 'translate(-50%, -50%)' }}
       >
         🤠
