@@ -1,9 +1,9 @@
 import React from 'react';
-import { Bone, Star } from 'lucide-react';
+import { Bone, Star, ArrowLeft } from 'lucide-react';
 import { useGameStore } from '../game/systems/useGameStore';
 
 export const GameUI: React.FC = () => {
-  const { currentMission, flowersCollected, startNextMission, hasTreat, missionComplete, playerPosition, puppyPosition, resetGame } = useGameStore();
+  const { currentMission, flowersCollected, startNextMission, hasTreat, missionComplete, playerPosition, puppyPosition, resetGame, goToMenu } = useGameStore();
 
   const getDist = (p1: { x: number, y: number }, p2: { x: number, y: number }) => {
     return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
@@ -13,12 +13,20 @@ export const GameUI: React.FC = () => {
 
   return (
     <div className="absolute inset-0 pointer-events-none select-none z-20 font-sans">
-      {/* Top Left: Mission Objective */}
-      <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-6 py-4 rounded-3xl shadow-sm border border-slate-100">
-        <h2 className="text-xl font-bold text-slate-800 mb-1">Mission {currentMission}</h2>
-        <p className="text-slate-600 font-medium">
-          {currentMission === 1 ? 'Find the puppy and give it a treat!' : `Collect 3 flowers for the puppy. (${flowersCollected}/3)`}
-        </p>
+      {/* Top Left: Navigation & Mission Objective */}
+      <div className="absolute top-6 left-6 flex flex-col space-y-3">
+        <button 
+          onClick={() => goToMenu()}
+          className="pointer-events-auto flex items-center justify-center space-x-2 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-sm border border-slate-100 hover:bg-slate-50 hover:scale-105 transition-all w-max text-slate-600 font-bold"
+        >
+          <ArrowLeft className="w-5 h-5" /> <span>Menu</span>
+        </button>
+        <div className="bg-white/90 backdrop-blur-md px-6 py-4 rounded-3xl shadow-sm border border-slate-100">
+          <h2 className="text-xl font-bold text-slate-800 mb-1">Mission {currentMission}</h2>
+          <p className="text-slate-600 font-medium">
+            {currentMission === 1 ? 'Find the puppy and give it a treat!' : `Collect 3 flowers for the puppy. (${flowersCollected}/3)`}
+          </p>
+        </div>
       </div>
 
       {/* Top Right: Inventory */}
