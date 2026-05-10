@@ -3,7 +3,7 @@ import { useGameStore } from '../game/systems/useGameStore';
 import { Tree, Pond, Rock, Flower, WindingPath, PetCorner, TreatAltar } from '../components/MapElements';
 
 export const GameScreen: React.FC = () => {
-  const { playerPosition, puppyPosition, treatPosition, hasTreat, movePlayer, collectTreat, feedPuppy } = useGameStore();
+  const { playerPosition, puppyPosition, treatPosition, hasTreat, missionComplete, movePlayer, collectTreat, feedPuppy } = useGameStore();
   const [keys, setKeys] = useState<{ [key: string]: boolean }>({});
 
   // Keyboard state
@@ -53,12 +53,20 @@ export const GameScreen: React.FC = () => {
 
     // Puppy feed
     if (keys['e'] || keys['E']) {
-      if (getDist(playerPosition, puppyPosition) < 10 && hasTreat) {
+      if (getDist(playerPosition, puppyPosition) < 10 && hasTreat && !missionComplete) {
         feedPuppy();
         setKeys((k) => ({ ...k, e: false, E: false }));
       }
     }
-  }, [playerPosition, treatPosition, puppyPosition, hasTreat, keys, collectTreat, feedPuppy]);
+  }, [playerPosition, treatPosition, puppyPosition, hasTreat, missionComplete, keys, collectTreat, feedPuppy]);
+
+  // Audio hook placeholder
+  useEffect(() => {
+    if (missionComplete) {
+      console.log("[AUDIO] Play happy_bark.mp3");
+      console.log("[AUDIO] Play mission_success.mp3");
+    }
+  }, [missionComplete]);
 
   return (
     <div className="w-full h-full bg-[#96c773] relative overflow-hidden shadow-[inset_0_0_100px_rgba(0,0,0,0.2)]">
@@ -109,10 +117,25 @@ export const GameScreen: React.FC = () => {
       )}
 
       <div 
-        className="absolute w-14 h-14 bg-orange-400 rounded-3xl flex items-center justify-center shadow-lg text-3xl border-4 border-white/50 z-20 transition-all duration-300"
+        className={`absolute w-14 h-14 bg-orange-400 rounded-3xl flex items-center justify-center shadow-lg text-3xl border-4 border-white/50 z-20 transition-all duration-300 ${missionComplete ? 'animate-happy-bounce' : 'animate-idle-bounce'}`}
         style={{ left: `${puppyPosition.x}%`, top: `${puppyPosition.y}%`, transform: 'translate(-50%, -50%)' }}
       >
-        🐶
+        {/* Tail */}
+        <div className={`absolute -right-3 top-1/2 w-4 h-2 bg-orange-300 rounded-full origin-left ${missionComplete ? 'animate-wag' : 'animate-[tailWag_1s_ease-in-out_infinite_alternate]'}`} />
+        
+        <span className="relative z-10">🐶</span>
+
+        {/* Reaction Text & Hearts */}
+        {missionComplete && (
+          <>
+            <div className="absolute -top-12 whitespace-nowrap text-white font-bold bg-amber-500 px-3 py-1 rounded-full shadow-lg text-sm animate-bounce">
+              Woof! Thank you! 🦴
+            </div>
+            <div className="absolute top-0 text-red-500 animate-float-heart" style={{ left: '20%' }}>❤️</div>
+            <div className="absolute top-0 text-pink-500 animate-float-heart" style={{ left: '80%', animationDelay: '0.2s' }}>💖</div>
+            <div className="absolute top-0 text-red-400 animate-float-heart" style={{ left: '50%', animationDelay: '0.4s' }}>❤️</div>
+          </>
+        )}
       </div>
 
       <div 
