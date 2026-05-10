@@ -61,18 +61,29 @@ interface GameState {
   resetProgress: () => void;
 }
 
-const INITIAL_PLAYER = { x: 50, y: 50 };
-const INITIAL_PUPPY = { x: 80, y: 80 };
-const INITIAL_TREAT = { x: 20, y: 20 };
-const INITIAL_TOY = { x: 20, y: 85 };
+// Map is 300vw x 300vh. All positions are % of that large map.
+// Zone layout:
+//  y: 80-95 = Starting Camp (south center)
+//  y: 60-75 = Forest trail / river crossing
+//  y: 45-58 = Ruins (west) + Hidden Glade (east)
+//  y: 25-40 = Search Field / Lookout
+//  y: 5-20  = Locked Gate / Exit (north)
+const INITIAL_PLAYER = { x: 50, y: 85 };
+const INITIAL_PUPPY  = { x: 53, y: 82 };
+// M1 treat: near old altar, west side of camp
+const INITIAL_TREAT  = { x: 35, y: 78 };
+// M3 toy:   in the ruins, west zone
+const INITIAL_TOY    = { x: 20, y: 47 };
+// M2 flowers: hidden eastern glade
 const INITIAL_FLOWERS = [
-  { pos: { x: 30, y: 70 }, collected: false },
-  { pos: { x: 70, y: 30 }, collected: false },
-  { pos: { x: 85, y: 60 }, collected: false },
+  { pos: { x: 72, y: 62 }, collected: false },
+  { pos: { x: 78, y: 57 }, collected: false },
+  { pos: { x: 68, y: 55 }, collected: false },
 ];
-const INITIAL_KEY = { x: 85, y: 20 };
-const INITIAL_GATE = { x: 50, y: 10 };
-const INITIAL_EXIT = { x: 50, y: 0 };
+// M4 key: buried in the search field (east, north)
+const INITIAL_KEY    = { x: 74, y: 30 };
+const INITIAL_GATE   = { x: 50, y: 14 };
+const INITIAL_EXIT   = { x: 50, y:  8 };
 
 export const useGameStore = create<GameState>()(
   persist(
@@ -111,8 +122,8 @@ export const useGameStore = create<GameState>()(
         
         // Simple bounding box logic for the gate (y < 12 and x is around 50)
         if (state.currentMission === 4 && !state.gateUnlocked) {
-          if (newY < 12 && newX > 40 && newX < 60) {
-            return state; // blocked
+          if (newY < 16 && newX > 43 && newX < 57) {
+            return state; // gate blocks passage
           }
         }
         
