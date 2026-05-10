@@ -1,6 +1,6 @@
 import React from 'react';
 import { useGameStore } from '../game/systems/useGameStore';
-import { ArrowLeft, Bone, Flower2, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, Bone, Flower2, CheckCircle2, Dribbble } from 'lucide-react';
 
 export const MissionSelect: React.FC = () => {
   const { startMission, goToMenu, completedMissions } = useGameStore();
@@ -19,6 +19,13 @@ export const MissionSelect: React.FC = () => {
       description: 'Collect 3 flowers for the puppy.',
       icon: <Flower2 className="w-8 h-8 text-purple-500 fill-current" />,
       color: 'bg-purple-50 border-purple-200 hover:border-purple-400',
+    },
+    {
+      id: 3,
+      title: 'Find Buddy\'s Toy',
+      description: 'Find Buddy\'s lost toy.',
+      icon: <Dribbble className="w-8 h-8 text-blue-500 fill-current" />,
+      color: 'bg-blue-50 border-blue-200 hover:border-blue-400',
     }
   ];
 

@@ -119,27 +119,43 @@ export const useGameStore = create<GameState>()(
         };
       }),
 
+      collectToy: () => set((state) => {
+        if (state.currentMission !== 3 || state.hasToy) return state;
+        
+        const newCompleted = state.completedMissions.includes(3) ? state.completedMissions : [...state.completedMissions, 3];
+        return {
+          hasToy: true,
+          missionComplete: true,
+          puppyHappiness: state.puppyHappiness + 1,
+          completedMissions: newCompleted,
+        };
+      }),
+
       startMission: (missionNumber) => set({
         currentScreen: 'game',
         currentMission: missionNumber,
         missionComplete: false,
         hasTreat: false,
+        hasToy: false,
         playerPosition: INITIAL_PLAYER,
         puppyPosition: INITIAL_PUPPY,
         treatPosition: INITIAL_TREAT,
+        toyPosition: INITIAL_TOY,
         flowersCollected: 0,
         flowerPositions: INITIAL_FLOWERS,
       }),
 
       startNextMission: () => set((state) => {
-        if (state.currentMission === 1) {
+        if (state.currentMission < 3) {
           return {
-            currentMission: 2,
+            currentMission: state.currentMission + 1,
             missionComplete: false,
             hasTreat: false,
+            hasToy: false,
             playerPosition: INITIAL_PLAYER,
             puppyPosition: INITIAL_PUPPY,
             treatPosition: INITIAL_TREAT,
+            toyPosition: INITIAL_TOY,
             flowersCollected: 0,
             flowerPositions: INITIAL_FLOWERS,
           };
@@ -149,10 +165,12 @@ export const useGameStore = create<GameState>()(
       
       resetGame: () => set(() => ({
         hasTreat: false,
+        hasToy: false,
         missionComplete: false,
         playerPosition: INITIAL_PLAYER,
         puppyPosition: INITIAL_PUPPY,
         treatPosition: INITIAL_TREAT,
+        toyPosition: INITIAL_TOY,
         flowersCollected: 0,
         flowerPositions: INITIAL_FLOWERS,
       })),

@@ -5,7 +5,8 @@ import { Tree, Pond, Rock, Flower, WindingPath, PetCorner, TreatAltar } from '..
 export const GameScreen: React.FC = () => {
   const { 
     currentMission, playerPosition, puppyPosition, treatPosition, hasTreat, 
-    missionComplete, flowerPositions, movePlayer, collectTreat, feedPuppy, collectFlower 
+    missionComplete, flowerPositions, movePlayer, collectTreat, feedPuppy, collectFlower,
+    toyPosition, hasToy, collectToy
   } = useGameStore();
   const [keys, setKeys] = useState<{ [key: string]: boolean }>({});
 
@@ -69,8 +70,13 @@ export const GameScreen: React.FC = () => {
           collectFlower(index);
         }
       });
+    } else if (currentMission === 3) {
+      // Toy collection
+      if (!hasToy && getDist(playerPosition, toyPosition) < 5) {
+        collectToy();
+      }
     }
-  }, [currentMission, playerPosition, treatPosition, puppyPosition, hasTreat, missionComplete, flowerPositions, keys, collectTreat, feedPuppy, collectFlower]);
+  }, [currentMission, playerPosition, treatPosition, puppyPosition, hasTreat, missionComplete, flowerPositions, keys, collectTreat, feedPuppy, collectFlower, toyPosition, hasToy, collectToy]);
 
   // Audio hook placeholder
   useEffect(() => {
@@ -140,7 +146,16 @@ export const GameScreen: React.FC = () => {
         )
       ))}
 
-      <div 
+      {currentMission === 3 && !hasToy && (
+        <div 
+          className="absolute w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center animate-bounce shadow-lg text-2xl border-2 border-white z-20"
+          style={{ left: `${toyPosition.x}%`, top: `${toyPosition.y}%`, transform: 'translate(-50%, -50%)' }}
+        >
+          🎾
+        </div>
+      )}
+
+      <div  
         className={`absolute w-14 h-14 bg-orange-400 rounded-3xl flex items-center justify-center shadow-lg text-3xl border-4 border-white/50 z-20 transition-all duration-300 ${missionComplete ? 'animate-happy-bounce' : 'animate-idle-bounce'}`}
         style={{ left: `${puppyPosition.x}%`, top: `${puppyPosition.y}%`, transform: 'translate(-50%, -50%)' }}
       >
@@ -153,7 +168,7 @@ export const GameScreen: React.FC = () => {
         {missionComplete && (
           <>
             <div className="absolute -top-12 whitespace-nowrap text-white font-bold bg-amber-500 px-3 py-1 rounded-full shadow-lg text-sm animate-bounce">
-              {currentMission === 1 ? 'Woof! Thank you! 🦴' : 'Woof! So pretty! 🌸'}
+              {currentMission === 1 ? 'Woof! Thank you! 🦴' : currentMission === 2 ? 'Woof! So pretty! 🌸' : 'You found my toy! 🎾'}
             </div>
             <div className="absolute top-0 text-red-500 animate-float-heart" style={{ left: '20%' }}>❤️</div>
             <div className="absolute top-0 text-pink-500 animate-float-heart" style={{ left: '80%', animationDelay: '0.2s' }}>💖</div>

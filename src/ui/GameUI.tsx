@@ -1,9 +1,9 @@
 import React from 'react';
-import { Bone, Star, ArrowLeft } from 'lucide-react';
+import { Bone, Star, ArrowLeft, Dribbble } from 'lucide-react';
 import { useGameStore } from '../game/systems/useGameStore';
 
 export const GameUI: React.FC = () => {
-  const { currentMission, flowersCollected, startNextMission, hasTreat, missionComplete, playerPosition, puppyPosition, resetGame, goToMenu } = useGameStore();
+  const { currentMission, flowersCollected, hasToy, startNextMission, hasTreat, missionComplete, playerPosition, puppyPosition, resetGame, goToMenu } = useGameStore();
 
   const getDist = (p1: { x: number, y: number }, p2: { x: number, y: number }) => {
     return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
@@ -24,7 +24,9 @@ export const GameUI: React.FC = () => {
         <div className="bg-white/90 backdrop-blur-md px-6 py-4 rounded-3xl shadow-sm border border-slate-100">
           <h2 className="text-xl font-bold text-slate-800 mb-1">Mission {currentMission}</h2>
           <p className="text-slate-600 font-medium">
-            {currentMission === 1 ? 'Find the puppy and give it a treat!' : `Collect 3 flowers for the puppy. (${flowersCollected}/3)`}
+            {currentMission === 1 ? 'Find the puppy and give it a treat!' : 
+             currentMission === 2 ? `Collect 3 flowers for the puppy. (${flowersCollected}/3)` :
+             'Find Buddy\'s lost toy.'}
           </p>
         </div>
       </div>
@@ -35,13 +37,17 @@ export const GameUI: React.FC = () => {
           <div className={`flex items-center justify-center w-16 h-16 rounded-3xl shadow-sm border transition-all duration-300 ${hasTreat ? 'bg-amber-100 border-amber-300 scale-110' : 'bg-white/90 border-slate-100'}`}>
             <Bone className={`w-8 h-8 ${hasTreat ? 'text-amber-500 animate-pulse' : 'text-slate-300'}`} />
           </div>
-        ) : (
+        ) : currentMission === 2 ? (
           <div className="flex space-x-2">
             {[0, 1, 2].map((i) => (
               <div key={i} className={`flex items-center justify-center w-12 h-12 rounded-2xl shadow-sm border transition-all duration-300 ${flowersCollected > i ? 'bg-purple-100 border-purple-300 scale-110' : 'bg-white/90 border-slate-100'}`}>
                 <span className={`text-2xl ${flowersCollected > i ? 'animate-pulse' : 'opacity-30 grayscale'}`}>🌸</span>
               </div>
             ))}
+          </div>
+        ) : (
+          <div className={`flex items-center justify-center w-16 h-16 rounded-3xl shadow-sm border transition-all duration-300 ${hasToy ? 'bg-blue-100 border-blue-300 scale-110' : 'bg-white/90 border-slate-100'}`}>
+            <Dribbble className={`w-8 h-8 ${hasToy ? 'text-blue-500 animate-pulse' : 'text-slate-300'}`} />
           </div>
         )}
       </div>
@@ -69,10 +75,15 @@ export const GameUI: React.FC = () => {
                   <Bone className="w-8 h-8 text-amber-500 fill-current" />
                   <span className="text-xl font-bold text-amber-700">You earned 1 Puppy Treat!</span>
                 </>
-              ) : (
+              ) : currentMission === 2 ? (
                 <>
                   <span className="text-3xl">🌸</span>
                   <span className="text-xl font-bold text-purple-700">You made the puppy happy!</span>
+                </>
+              ) : (
+                <>
+                  <Dribbble className="w-8 h-8 text-blue-500 fill-current" />
+                  <span className="text-xl font-bold text-blue-700">Buddy gained +1 happiness!</span>
                 </>
               )}
             </div>
@@ -84,7 +95,7 @@ export const GameUI: React.FC = () => {
               >
                 Play Again
               </button>
-              {currentMission === 1 ? (
+              {currentMission < 3 ? (
                 <button 
                   onClick={() => startNextMission()}
                   className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-xl px-8 py-4 rounded-full transition-transform hover:scale-105 shadow-lg shadow-blue-500/30"
