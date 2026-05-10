@@ -25,7 +25,8 @@ export const CropPatch = () => {
     return () => clearInterval(id);
   }, [cropState, wateredAt, growthMs]);
 
-  const growthStage = STAGES.filter((s) => progress >= s.threshold).at(-1)!;
+  const filtered = STAGES.filter((s) => progress >= s.threshold);
+  const growthStage = filtered[filtered.length - 1]!
 
   const display = {
     empty: {
