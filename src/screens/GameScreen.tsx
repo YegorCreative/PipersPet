@@ -3,7 +3,10 @@ import { useGameStore } from '../game/systems/useGameStore';
 import { Tree, Pond, Rock, Flower, WindingPath, PetCorner, TreatAltar } from '../components/MapElements';
 
 export const GameScreen: React.FC = () => {
-  const { playerPosition, puppyPosition, treatPosition, hasTreat, missionComplete, movePlayer, collectTreat, feedPuppy } = useGameStore();
+  const { 
+    currentMission, playerPosition, puppyPosition, treatPosition, hasTreat, 
+    missionComplete, flowerPositions, movePlayer, collectTreat, feedPuppy, collectFlower 
+  } = useGameStore();
   const [keys, setKeys] = useState<{ [key: string]: boolean }>({});
 
   // Keyboard state
@@ -44,21 +47,30 @@ export const GameScreen: React.FC = () => {
       return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
     };
 
-    // Treat collection
-    if (!hasTreat) {
-      if (getDist(playerPosition, treatPosition) < 5) {
-        collectTreat();
+    if (currentMission === 1) {
+      // Treat collection
+      if (!hasTreat) {
+        if (getDist(playerPosition, treatPosition) < 5) {
+          collectTreat();
+        }
       }
-    }
 
-    // Puppy feed
-    if (keys['e'] || keys['E']) {
-      if (getDist(playerPosition, puppyPosition) < 10 && hasTreat && !missionComplete) {
-        feedPuppy();
-        setKeys((k) => ({ ...k, e: false, E: false }));
+      // Puppy feed
+      if (keys['e'] || keys['E']) {
+        if (getDist(playerPosition, puppyPosition) < 10 && hasTreat && !missionComplete) {
+          feedPuppy();
+          setKeys((k) => ({ ...k, e: false, E: false }));
+        }
       }
+    } else if (currentMission === 2) {
+      // Flower collection
+      flowerPositions.forEach((flower, index) => {
+        if (!flower.collected && getDist(playerPosition, flower.pos) < 5) {
+          collectFlower(index);
+        }
+      });
     }
-  }, [playerPosition, treatPosition, puppyPosition, hasTreat, missionComplete, keys, collectTreat, feedPuppy]);
+  }, [currentMission, playerPosition, treatPosition, puppyPosition, hasTreat, missionComplete, flowerPositions, keys, collectTreat, feedPuppy, collectFlower]);
 
   // Audio hook placeholder
   useEffect(() => {
@@ -107,7 +119,7 @@ export const GameScreen: React.FC = () => {
       <Flower left="70%" top="85%" color="bg-pink-300" />
 
       {/* Interactive Entities */}
-      {!hasTreat && (
+      {currentMission === 1 && !hasTreat && (
         <div 
           className="absolute w-10 h-10 bg-pink-400 rounded-full flex items-center justify-center animate-bounce shadow-lg text-xl border-2 border-white z-20"
           style={{ left: `${treatPosition.x}%`, top: `${treatPosition.y}%`, transform: 'translate(-50%, -50%)' }}
@@ -115,6 +127,18 @@ export const GameScreen: React.FC = () => {
           🦴
         </div>
       )}
+
+      {currentMission === 2 && flowerPositions.map((flower, index) => (
+        !flower.collected && (
+          <div 
+            key={index}
+            className="absolute w-10 h-10 bg-purple-400 rounded-full flex items-center justify-center animate-[bounce_2s_infinite] shadow-lg text-xl border-2 border-white z-20"
+            style={{ left: `${flower.pos.x}%`, top: `${flower.pos.y}%`, transform: 'translate(-50%, -50%)' }}
+          >
+            🌸
+          </div>
+        )
+      ))}
 
       <div 
         className={`absolute w-14 h-14 bg-orange-400 rounded-3xl flex items-center justify-center shadow-lg text-3xl border-4 border-white/50 z-20 transition-all duration-300 ${missionComplete ? 'animate-happy-bounce' : 'animate-idle-bounce'}`}
@@ -129,7 +153,7 @@ export const GameScreen: React.FC = () => {
         {missionComplete && (
           <>
             <div className="absolute -top-12 whitespace-nowrap text-white font-bold bg-amber-500 px-3 py-1 rounded-full shadow-lg text-sm animate-bounce">
-              Woof! Thank you! 🦴
+              {currentMission === 1 ? 'Woof! Thank you! 🦴' : 'Woof! So pretty! 🌸'}
             </div>
             <div className="absolute top-0 text-red-500 animate-float-heart" style={{ left: '20%' }}>❤️</div>
             <div className="absolute top-0 text-pink-500 animate-float-heart" style={{ left: '80%', animationDelay: '0.2s' }}>💖</div>

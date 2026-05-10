@@ -93,7 +93,7 @@ export const useGameStore = create<GameState>((set) => ({
     return state;
   }),
   
-  resetGame: () => set((state) => ({
+  resetGame: () => set(() => ({
     hasTreat: false,
     missionComplete: false,
     playerPosition: INITIAL_PLAYER,

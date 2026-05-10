@@ -3,7 +3,7 @@ import { Bone, Star } from 'lucide-react';
 import { useGameStore } from '../game/systems/useGameStore';
 
 export const GameUI: React.FC = () => {
-  const { hasTreat, missionComplete, playerPosition, puppyPosition, resetGame } = useGameStore();
+  const { currentMission, flowersCollected, startNextMission, hasTreat, missionComplete, playerPosition, puppyPosition, resetGame } = useGameStore();
 
   const getDist = (p1: { x: number, y: number }, p2: { x: number, y: number }) => {
     return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2));
@@ -15,15 +15,27 @@ export const GameUI: React.FC = () => {
     <div className="absolute inset-0 pointer-events-none select-none z-20 font-sans">
       {/* Top Left: Mission Objective */}
       <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-md px-6 py-4 rounded-3xl shadow-sm border border-slate-100">
-        <h2 className="text-xl font-bold text-slate-800 mb-1">Mission</h2>
-        <p className="text-slate-600 font-medium">Find the puppy and give it a treat!</p>
+        <h2 className="text-xl font-bold text-slate-800 mb-1">Mission {currentMission}</h2>
+        <p className="text-slate-600 font-medium">
+          {currentMission === 1 ? 'Find the puppy and give it a treat!' : `Collect 3 flowers for the puppy. (${flowersCollected}/3)`}
+        </p>
       </div>
 
       {/* Top Right: Inventory */}
       <div className="absolute top-6 right-6 flex items-center space-x-3">
-        <div className={`flex items-center justify-center w-16 h-16 rounded-3xl shadow-sm border transition-all duration-300 ${hasTreat ? 'bg-amber-100 border-amber-300 scale-110' : 'bg-white/90 border-slate-100'}`}>
-          <Bone className={`w-8 h-8 ${hasTreat ? 'text-amber-500 animate-pulse' : 'text-slate-300'}`} />
-        </div>
+        {currentMission === 1 ? (
+          <div className={`flex items-center justify-center w-16 h-16 rounded-3xl shadow-sm border transition-all duration-300 ${hasTreat ? 'bg-amber-100 border-amber-300 scale-110' : 'bg-white/90 border-slate-100'}`}>
+            <Bone className={`w-8 h-8 ${hasTreat ? 'text-amber-500 animate-pulse' : 'text-slate-300'}`} />
+          </div>
+        ) : (
+          <div className="flex space-x-2">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className={`flex items-center justify-center w-12 h-12 rounded-2xl shadow-sm border transition-all duration-300 ${flowersCollected > i ? 'bg-purple-100 border-purple-300 scale-110' : 'bg-white/90 border-slate-100'}`}>
+                <span className={`text-2xl ${flowersCollected > i ? 'animate-pulse' : 'opacity-30 grayscale'}`}>🌸</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Center: Mission Complete */}
@@ -44,8 +56,17 @@ export const GameUI: React.FC = () => {
             <p className="text-xl text-slate-600 mb-6 font-medium">Great job! The puppy is very happy.</p>
             
             <div className="bg-amber-50 rounded-2xl py-4 px-6 mb-8 border-2 border-amber-200 shadow-inner flex items-center justify-center space-x-3">
-              <Bone className="w-8 h-8 text-amber-500 fill-current" />
-              <span className="text-xl font-bold text-amber-700">You earned 1 Puppy Treat!</span>
+              {currentMission === 1 ? (
+                <>
+                  <Bone className="w-8 h-8 text-amber-500 fill-current" />
+                  <span className="text-xl font-bold text-amber-700">You earned 1 Puppy Treat!</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-3xl">🌸</span>
+                  <span className="text-xl font-bold text-purple-700">You made the puppy happy!</span>
+                </>
+              )}
             </div>
 
             <div className="flex flex-col space-y-3">
@@ -55,19 +76,28 @@ export const GameUI: React.FC = () => {
               >
                 Play Again
               </button>
-              <button 
-                disabled
-                className="bg-slate-100 text-slate-400 font-bold text-lg px-8 py-4 rounded-full border-2 border-slate-200 cursor-not-allowed"
-              >
-                Next Mission Coming Soon
-              </button>
+              {currentMission === 1 ? (
+                <button 
+                  onClick={() => startNextMission()}
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold text-xl px-8 py-4 rounded-full transition-transform hover:scale-105 shadow-lg shadow-blue-500/30"
+                >
+                  Next Mission
+                </button>
+              ) : (
+                <button 
+                  disabled
+                  className="bg-slate-100 text-slate-400 font-bold text-lg px-8 py-4 rounded-full border-2 border-slate-200 cursor-not-allowed"
+                >
+                  More Missions Coming Soon
+                </button>
+              )}
             </div>
           </div>
         </div>
       )}
       
       {/* Interaction Prompt */}
-      {!missionComplete && isNearPuppy && hasTreat && (
+      {!missionComplete && isNearPuppy && hasTreat && currentMission === 1 && (
         <div className="absolute bottom-24 left-1/2 -translate-x-1/2 bg-amber-500 text-white px-6 py-3 rounded-full shadow-lg font-bold text-lg animate-bounce">
           Press 'E' to Feed Puppy!
         </div>
