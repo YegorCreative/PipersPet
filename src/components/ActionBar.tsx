@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useFarmStore, CROP_REWARD, type CropType } from '../game/useFarmStore';
+import { useFarmStore, type CropType } from '../game/useFarmStore';
 import { Shop } from './Shop';
 
 interface BtnProps {
@@ -52,7 +52,6 @@ export const ActionBar = () => {
   const [shopOpen, setShopOpen] = useState(false);
 
   const harvestMeta = CROP_META[cropType];
-  const harvestReward = CROP_REWARD[cropType];
 
   return (
     <>
