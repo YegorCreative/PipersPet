@@ -40,9 +40,9 @@ const ActionButton = ({ onClick, disabled, icon, label, variant }: BtnProps) => 
 );
 
 export const ActionBar = () => {
-  const cropState    = useFarmStore((s) => s.cropState);
-  const cropType     = useFarmStore((s) => s.cropType);
-  const selectedCrop = useFarmStore((s) => s.selectedCrop);
+  const patches      = useFarmStore((s) => s.patches);
+  const activePatch  = useFarmStore((s) => s.activePatch);
+  const patch2Unlocked = useFarmStore((s) => s.patch2Unlocked);
   const carrots      = useFarmStore((s) => s.carrots);
   const wheat        = useFarmStore((s) => s.wheat);
   const selectCrop   = useFarmStore((s) => s.selectCrop);
@@ -53,7 +53,11 @@ export const ActionBar = () => {
   const feedChicken  = useFarmStore((s) => s.feedChicken);
   const [shopOpen, setShopOpen] = useState(false);
 
+  const patch = patches[activePatch];
+  const { cropState, cropType, selectedCrop } = patch;
   const harvestMeta = CROP_META[cropType];
+
+  const patchLabel = activePatch === 0 ? 'Patch 1' : 'Plot 2';
 
   return (
     <>
