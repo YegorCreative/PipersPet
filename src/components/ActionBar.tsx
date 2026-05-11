@@ -86,7 +86,7 @@ export const ActionBar = () => {
         {/* Divider — desktop only */}
         <div className="hidden md:block w-px h-7 bg-white/20" />
 
-        {/* Crop selector + plant — only when patch is empty */}}
+        {/* Crop selector + plant — only when patch is empty */}
         {cropState === 'empty' && (
           <div className="flex items-center gap-2">
             {/* Crop toggle */}
