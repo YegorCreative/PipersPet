@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { useFarmStore } from '../game/useFarmStore';
+import { Shop } from './Shop';
 
 interface BtnProps {
   onClick?: () => void;
@@ -39,31 +41,39 @@ export const ActionBar = () => {
   const waterCrop   = useFarmStore((s) => s.waterCrop);
   const harvestCrop = useFarmStore((s) => s.harvestCrop);
   const feedPuppy   = useFarmStore((s) => s.feedPuppy);
+  const [shopOpen, setShopOpen] = useState(false);
 
   return (
-    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-wrap items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-black/25 backdrop-blur-md border border-white/15 shadow-2xl">
-      {cropState === 'empty' && (
-        <ActionButton onClick={plantCarrot} icon="🌱" label="Plant Carrot" variant="green" />
-      )}
-      {cropState === 'planted' && (
-        <ActionButton onClick={waterCrop} icon="💧" label="Water Crop" variant="blue" />
-      )}
-      {cropState === 'watered' && (
-        <ActionButton disabled icon="⏳" label="Growing… wait for it" variant="ghost" />
-      )}
-      {cropState === 'ready' && (
-        <ActionButton onClick={harvestCrop} icon="🥕" label="Harvest Carrots  +5🪙 +3🥕" variant="orange" />
-      )}
+    <>
+      {shopOpen && <Shop onClose={() => setShopOpen(false)} />}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-wrap items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-black/25 backdrop-blur-md border border-white/15 shadow-2xl">
+        {cropState === 'empty' && (
+          <ActionButton onClick={plantCarrot} icon="🌱" label="Plant Carrot" variant="green" />
+        )}
+        {cropState === 'planted' && (
+          <ActionButton onClick={waterCrop} icon="💧" label="Water Crop" variant="blue" />
+        )}
+        {cropState === 'watered' && (
+          <ActionButton disabled icon="⏳" label="Growing… wait for it" variant="ghost" />
+        )}
+        {cropState === 'ready' && (
+          <ActionButton onClick={harvestCrop} icon="🥕" label="Harvest Carrots  +5🪙 +3🥕" variant="orange" />
+        )}
 
-      <div className="w-px h-7 bg-white/20" />
+        <div className="w-px h-7 bg-white/20" />
 
-      <ActionButton
-        onClick={feedPuppy}
-        disabled={carrots < 1}
-        icon="🦴"
-        label={carrots > 0 ? `Feed Biscuit  (${carrots} 🥕)  +2🪙` : 'Need carrots first'}
-        variant="pink"
-      />
-    </div>
+        <ActionButton
+          onClick={feedPuppy}
+          disabled={carrots < 1}
+          icon="🦴"
+          label={carrots > 0 ? `Feed Biscuit  (${carrots} 🥕)  +2🪙` : 'Need carrots first'}
+          variant="pink"
+        />
+
+        <div className="w-px h-7 bg-white/20" />
+
+        <ActionButton onClick={() => setShopOpen(true)} icon="🛒" label="Shop" variant="ghost" />
+      </div>
+    </>
   );
 };

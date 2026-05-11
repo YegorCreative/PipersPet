@@ -3,7 +3,8 @@ import { persist } from 'zustand/middleware';
 
 export type CropState = 'empty' | 'planted' | 'watered' | 'ready';
 
-export const GROWTH_MS = 30_000;
+export const GROWTH_MS_NORMAL   = 30_000;
+export const GROWTH_MS_UPGRADED = 20_000;
 
 interface FarmStore {
   coins: number;
@@ -21,12 +22,15 @@ interface FarmStore {
   dayComplete: boolean;
   dayRewardGiven: boolean;
 
+  hasWateringCan: boolean;
+
   plantCarrot: () => void;
   waterCrop: () => void;
   harvestCrop: () => void;
   feedPuppy: () => void;
   tick: () => void;
   startNextDay: () => void;
+  buyWateringCan: () => void;
 }
 
 function allDone(a: boolean, b: boolean, c: boolean) {
@@ -51,6 +55,8 @@ export const useFarmStore = create<FarmStore>()(
       dayComplete: false,
       dayRewardGiven: false,
 
+      hasWateringCan: false,
+
       plantCarrot: () => {
         const s = get();
         if (s.cropState !== 'empty') return;
@@ -67,7 +73,17 @@ export const useFarmStore = create<FarmStore>()(
       waterCrop: () => {
         const s = get();
         if (s.cropState !== 'planted') return;
-        set({ cropState: 'watered', wateredAt: Date.now() });
+        set({
+          cropState: 'watered',
+          wateredAt: Date.now(),
+          growthMs: s.hasWateringCan ? GROWTH_MS_UPGRADED : GROWTH_MS_NORMAL,
+        });
+      },
+
+      buyWateringCan: () => {
+        const s = get();
+        if (s.hasWateringCan || s.coins < 50) return;
+        set({ hasWateringCan: true, coins: s.coins - 50, growthMs: GROWTH_MS_UPGRADED });
       },
 
       harvestCrop: () => {
@@ -139,6 +155,7 @@ export const useFarmStore = create<FarmStore>()(
         dayRewardGiven: s.dayRewardGiven,
         cropState: s.cropState,
         wateredAt: s.wateredAt,
+        hasWateringCan: s.hasWateringCan,
       }),
     }
   )
