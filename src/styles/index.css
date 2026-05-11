@@ -3,9 +3,27 @@
 @tailwind utilities;
 
 @layer base {
-  html, body, #root {
-    @apply m-0 p-0 w-full h-full overflow-hidden;
+  /* Mobile: scrollable, no viewport lock */
+  html {
+    @apply m-0 p-0 w-full overflow-x-hidden;
+    min-height: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body, #root {
+    @apply m-0 p-0 w-full;
+    min-height: 100%;
     font-family: 'Inter', sans-serif;
+  }
+  /* Tablet/desktop (≥768px): lock to viewport */
+  @media (min-width: 768px) {
+    html, body, #root {
+      height: 100%;
+      overflow: hidden;
+    }
+  }
+  /* Remove tap delay on interactive elements */
+  button, a {
+    touch-action: manipulation;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Outfit', sans-serif;
