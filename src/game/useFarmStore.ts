@@ -43,6 +43,8 @@ interface FarmStore {
   carrots: number;
   wheat: number;
   eggs: number;
+  carrotSeeds: number;
+  wheatSeeds: number;
 
   patches: PatchState[];
   activePatch: number;
@@ -68,6 +70,9 @@ interface FarmStore {
   sellEgg: () => void;
   sellAll: () => void;
 
+  buyCarrotSeed: () => void;
+  buyWheatSeed: () => void;
+
   setActivePatch: (index: number) => void;
   selectCrop: (type: CropType) => void;
   plantCrop: () => void;
@@ -88,6 +93,8 @@ export const useFarmStore = create<FarmStore>()(
       carrots: 0,
       wheat: 0,
       eggs: 0,
+      carrotSeeds: 3,
+      wheatSeeds: 1,
 
       patches: [DEFAULT_PATCH, DEFAULT_PATCH],
       activePatch: 0,
@@ -117,10 +124,15 @@ export const useFarmStore = create<FarmStore>()(
       },
 
       plantCrop: () => {
-        const { patches, activePatch } = get();
-        const p = patches[activePatch];
+        const s = get();
+        const p = s.patches[s.activePatch];
         if (p.cropState !== 'empty') return;
-        set({ patches: updatePatch(patches, activePatch, { cropState: 'planted', cropType: p.selectedCrop, wateredAt: null }) });
+        if (p.selectedCrop === 'carrot' && s.carrotSeeds < 1) return;
+        if (p.selectedCrop === 'wheat'  && s.wheatSeeds  < 1) return;
+        set({
+          patches: updatePatch(s.patches, s.activePatch, { cropState: 'planted', cropType: p.selectedCrop, wateredAt: null }),
+          ...(p.selectedCrop === 'carrot' ? { carrotSeeds: s.carrotSeeds - 1 } : { wheatSeeds: s.wheatSeeds - 1 }),
+        });
       },
 
       waterCrop: () => {
@@ -243,6 +255,18 @@ export const useFarmStore = create<FarmStore>()(
         set({ carrots: 0, wheat: 0, eggs: 0, coins: s.coins + earned });
       },
 
+      buyCarrotSeed: () => {
+        const s = get();
+        if (s.coins < 3) return;
+        set({ coins: s.coins - 3, carrotSeeds: s.carrotSeeds + 1 });
+      },
+
+      buyWheatSeed: () => {
+        const s = get();
+        if (s.coins < 6) return;
+        set({ coins: s.coins - 6, wheatSeeds: s.wheatSeeds + 1 });
+      },
+
       unlockPatch2: () => {
         const s = get();
         if (s.patch2Unlocked || s.coins < 100) return;
@@ -256,6 +280,8 @@ export const useFarmStore = create<FarmStore>()(
         carrots: s.carrots,
         wheat: s.wheat,
         eggs: s.eggs,
+        carrotSeeds: s.carrotSeeds,
+        wheatSeeds: s.wheatSeeds,
         puppyHappiness: s.puppyHappiness,
         chickenHappiness: s.chickenHappiness,
         day: s.day,
