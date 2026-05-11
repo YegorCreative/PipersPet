@@ -44,7 +44,7 @@ export const useFarmStore = create<FarmStore>()(
       carrots: 0,
       cropState: 'empty',
       wateredAt: null,
-      growthMs: GROWTH_MS,
+      growthMs: GROWTH_MS_NORMAL,
       puppyHappiness: 50,
       puppyFedRecently: false,
 

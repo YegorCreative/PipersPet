@@ -10,9 +10,15 @@ const STAGES = [
 export const CropPatch = () => {
   const cropState = useFarmStore((s) => s.cropState);
   const wateredAt = useFarmStore((s) => s.wateredAt);
-  const growthMs = useFarmStore((s) => s.growthMs);
+  const growthMs  = useFarmStore((s) => s.growthMs);
+  const hasWateringCan = useFarmStore((s) => s.hasWateringCan);
   const [progress, setProgress] = useState(0);
 
+  const growthSec = Math.round(growthMs / 1000);
+  const growthLabel = hasWateringCan
+    ? `Growth time: ${growthSec}s ⚡`
+    : `Growth time: ${growthSec}s`;
+  const growthLabelColor = hasWateringCan ? 'text-green-300' : 'text-white/40';
   useEffect(() => {
     if (cropState !== 'watered' || !wateredAt) {
       setProgress(0);
@@ -106,7 +112,15 @@ export const CropPatch = () => {
           <p className="text-center text-white/45 text-xs">
             {Math.round(progress)}% grown
           </p>
+          <p className={`text-center text-xs font-medium ${growthLabelColor}`}>
+            {growthLabel}
+          </p>
         </div>
+      )}
+
+      {/* Growth time hint on planted state */}
+      {cropState === 'planted' && (
+        <p className={`text-xs font-medium ${growthLabelColor}`}>{growthLabel}</p>
       )}
     </div>
   );
