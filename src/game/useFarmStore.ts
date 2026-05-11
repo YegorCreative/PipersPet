@@ -7,13 +7,11 @@ export type CropType  = 'carrot' | 'wheat';
 export const GROWTH_MS_NORMAL   = 30_000;
 export const GROWTH_MS_UPGRADED = 20_000;
 
-// Growth times per crop (normal / upgraded)
 export const CROP_GROWTH: Record<CropType, { normal: number; upgraded: number }> = {
   carrot: { normal: 30_000, upgraded: 20_000 },
   wheat:  { normal: 45_000, upgraded: 30_000 },
 };
 
-// Harvest rewards per crop
 export const CROP_REWARD: Record<CropType, { coins: number; carrot: number; wheat: number }> = {
   carrot: { coins: 5,  carrot: 3, wheat: 0 },
   wheat:  { coins: 10, carrot: 0, wheat: 2 },
@@ -23,18 +21,23 @@ interface FarmStore {
   coins: number;
   carrots: number;
   wheat: number;
+  eggs: number;
   cropState: CropState;
   cropType: CropType;
   selectedCrop: CropType;
   wateredAt: number | null;
   growthMs: number;
+
   puppyHappiness: number;
   puppyFedRecently: boolean;
 
+  chickenHappiness: number;
+  chickenFedRecently: boolean;
+
   day: number;
-  goalPlanted: boolean;
   goalHarvested: boolean;
-  goalFed: boolean;
+  goalFedPuppy: boolean;
+  goalFedChicken: boolean;
   dayComplete: boolean;
   dayRewardGiven: boolean;
 
@@ -45,6 +48,7 @@ interface FarmStore {
   waterCrop: () => void;
   harvestCrop: () => void;
   feedPuppy: () => void;
+  feedChicken: () => void;
   tick: () => void;
   startNextDay: () => void;
   buyWateringCan: () => void;
@@ -60,18 +64,23 @@ export const useFarmStore = create<FarmStore>()(
       coins: 0,
       carrots: 0,
       wheat: 0,
+      eggs: 0,
       cropState: 'empty',
       cropType: 'carrot',
       selectedCrop: 'carrot',
       wateredAt: null,
       growthMs: GROWTH_MS_NORMAL,
+
       puppyHappiness: 50,
       puppyFedRecently: false,
 
+      chickenHappiness: 50,
+      chickenFedRecently: false,
+
       day: 1,
-      goalPlanted: false,
       goalHarvested: false,
-      goalFed: false,
+      goalFedPuppy: false,
+      goalFedChicken: false,
       dayComplete: false,
       dayRewardGiven: false,
 
@@ -82,15 +91,7 @@ export const useFarmStore = create<FarmStore>()(
       plantCrop: () => {
         const s = get();
         if (s.cropState !== 'empty') return;
-        const goalPlanted = true;
-        const reward = !s.dayRewardGiven && allDone(goalPlanted, s.goalHarvested, s.goalFed);
-        set({
-          cropState: 'planted',
-          cropType: s.selectedCrop,
-          wateredAt: null,
-          goalPlanted,
-          ...(reward ? { dayComplete: true, dayRewardGiven: true, coins: s.coins + 25 } : {}),
-        });
+        set({ cropState: 'planted', cropType: s.selectedCrop, wateredAt: null });
       },
 
       waterCrop: () => {
@@ -116,7 +117,7 @@ export const useFarmStore = create<FarmStore>()(
         const reward = CROP_REWARD[s.cropType];
         const goalHarvested = true;
         const newCoins = s.coins + reward.coins;
-        const dayBonus = !s.dayRewardGiven && allDone(s.goalPlanted, goalHarvested, s.goalFed);
+        const dayBonus = !s.dayRewardGiven && allDone(goalHarvested, s.goalFedPuppy, s.goalFedChicken);
         set({
           carrots: s.carrots + reward.carrot,
           wheat: s.wheat + reward.wheat,
@@ -131,18 +132,36 @@ export const useFarmStore = create<FarmStore>()(
       feedPuppy: () => {
         const s = get();
         if (s.carrots < 1) return;
-        const goalFed = true;
+        const goalFedPuppy = true;
         const newCoins = s.coins + 2;
-        const reward = !s.dayRewardGiven && allDone(s.goalPlanted, s.goalHarvested, goalFed);
+        const dayBonus = !s.dayRewardGiven && allDone(s.goalHarvested, goalFedPuppy, s.goalFedChicken);
         set({
           carrots: s.carrots - 1,
-          coins: reward ? newCoins + 25 : newCoins,
+          coins: dayBonus ? newCoins + 25 : newCoins,
           puppyHappiness: Math.min(100, s.puppyHappiness + 20),
           puppyFedRecently: true,
-          goalFed,
-          ...(reward ? { dayComplete: true, dayRewardGiven: true } : {}),
+          goalFedPuppy,
+          ...(dayBonus ? { dayComplete: true, dayRewardGiven: true } : {}),
         });
         setTimeout(() => set({ puppyFedRecently: false }), 2500);
+      },
+
+      feedChicken: () => {
+        const s = get();
+        if (s.wheat < 1) return;
+        const goalFedChicken = true;
+        const newCoins = s.coins + 3;
+        const dayBonus = !s.dayRewardGiven && allDone(s.goalHarvested, s.goalFedPuppy, goalFedChicken);
+        set({
+          wheat: s.wheat - 1,
+          eggs: s.eggs + 1,
+          coins: dayBonus ? newCoins + 25 : newCoins,
+          chickenHappiness: Math.min(100, s.chickenHappiness + 15),
+          chickenFedRecently: true,
+          goalFedChicken,
+          ...(dayBonus ? { dayComplete: true, dayRewardGiven: true } : {}),
+        });
+        setTimeout(() => set({ chickenFedRecently: false }), 2500);
       },
 
       tick: () => {
@@ -157,9 +176,9 @@ export const useFarmStore = create<FarmStore>()(
       startNextDay: () => {
         set((s) => ({
           day: s.day + 1,
-          goalPlanted: false,
           goalHarvested: false,
-          goalFed: false,
+          goalFedPuppy: false,
+          goalFedChicken: false,
           dayComplete: false,
           dayRewardGiven: false,
           cropState: 'empty',
@@ -173,11 +192,13 @@ export const useFarmStore = create<FarmStore>()(
         coins: s.coins,
         carrots: s.carrots,
         wheat: s.wheat,
+        eggs: s.eggs,
         puppyHappiness: s.puppyHappiness,
+        chickenHappiness: s.chickenHappiness,
         day: s.day,
-        goalPlanted: s.goalPlanted,
         goalHarvested: s.goalHarvested,
-        goalFed: s.goalFed,
+        goalFedPuppy: s.goalFedPuppy,
+        goalFedChicken: s.goalFedChicken,
         dayComplete: s.dayComplete,
         dayRewardGiven: s.dayRewardGiven,
         cropState: s.cropState,
