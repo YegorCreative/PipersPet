@@ -42,7 +42,6 @@ const ActionButton = ({ onClick, disabled, icon, label, variant }: BtnProps) => 
 export const ActionBar = () => {
   const patches      = useFarmStore((s) => s.patches);
   const activePatch  = useFarmStore((s) => s.activePatch);
-  const patch2Unlocked = useFarmStore((s) => s.patch2Unlocked);
   const carrots      = useFarmStore((s) => s.carrots);
   const wheat        = useFarmStore((s) => s.wheat);
   const selectCrop   = useFarmStore((s) => s.selectCrop);
@@ -63,6 +62,14 @@ export const ActionBar = () => {
     <>
       {shopOpen && <Shop onClose={() => setShopOpen(false)} />}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-wrap items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-black/25 backdrop-blur-md border border-white/15 shadow-2xl">
+
+        {/* Active patch indicator */}
+        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/10 border border-white/15 text-white/70 text-xs font-semibold select-none">
+          <span>🌱</span>
+          <span>{patchLabel}</span>
+        </div>
+
+        <div className="w-px h-7 bg-white/20" />
 
         {/* Crop selector + plant — only when patch is empty */}
         {cropState === 'empty' && (

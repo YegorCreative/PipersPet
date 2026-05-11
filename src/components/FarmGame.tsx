@@ -39,13 +39,14 @@ export const FarmGame = () => {
       {/* Daily goals panel */}
       <DailyGoals />
 
-      {/* Farm scene — crop + animals */}
+      {/* Farm scene — animals + two crop patches */}
       <div
-        className="absolute inset-0 flex items-center justify-center gap-10"
+        className="absolute inset-0 flex items-center justify-center gap-6"
         style={{ paddingTop: 80, paddingBottom: 110 }}
       >
         <Puppy />
-        <CropPatch />
+        <CropPatch patchIndex={0} />
+        <CropPatch patchIndex={1} />
         <Chicken />
       </div>
 
