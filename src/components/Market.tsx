@@ -44,14 +44,18 @@ const SellRow = ({ emoji, name, count, coinsPer, onSell }: SellRowProps) => {
 };
 
 export const Market = ({ onClose }: MarketProps) => {
-  const coins      = useFarmStore((s) => s.coins);
-  const carrots    = useFarmStore((s) => s.carrots);
-  const wheat      = useFarmStore((s) => s.wheat);
-  const eggs       = useFarmStore((s) => s.eggs);
-  const sellCarrot = useFarmStore((s) => s.sellCarrot);
-  const sellWheat  = useFarmStore((s) => s.sellWheat);
-  const sellEgg    = useFarmStore((s) => s.sellEgg);
-  const sellAll    = useFarmStore((s) => s.sellAll);
+  const coins         = useFarmStore((s) => s.coins);
+  const carrots       = useFarmStore((s) => s.carrots);
+  const wheat         = useFarmStore((s) => s.wheat);
+  const eggs          = useFarmStore((s) => s.eggs);
+  const carrotSeeds   = useFarmStore((s) => s.carrotSeeds);
+  const wheatSeeds    = useFarmStore((s) => s.wheatSeeds);
+  const sellCarrot    = useFarmStore((s) => s.sellCarrot);
+  const sellWheat     = useFarmStore((s) => s.sellWheat);
+  const sellEgg       = useFarmStore((s) => s.sellEgg);
+  const sellAll       = useFarmStore((s) => s.sellAll);
+  const buyCarrotSeed = useFarmStore((s) => s.buyCarrotSeed);
+  const buyWheatSeed  = useFarmStore((s) => s.buyWheatSeed);
 
   const totalValue = carrots * 2 + wheat * 4 + eggs * 8;
   const hasAnything = totalValue > 0;
@@ -127,7 +131,57 @@ export const Market = ({ onClose }: MarketProps) => {
           </button>
         </div>
 
-        <p className="text-white/20 text-xs text-center">Prices are fixed · Buy seeds coming soon…</p>
+        {/* Divider */}
+        <div className="h-px bg-white/10" />
+
+        {/* Buy Seeds section */}
+        <div className="flex flex-col gap-2.5">
+          <p className="text-white/60 text-xs font-bold uppercase tracking-widest">Buy Seeds</p>
+
+          {/* Carrot seed */}
+          <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl border border-white/10 bg-white/5">
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl">🥕</span>
+              <div className="flex flex-col">
+                <span className="text-white font-semibold text-sm">Carrot Seed</span>
+                <span className="text-white/40 text-xs">{carrotSeeds} owned · 3🪙 each</span>
+              </div>
+            </div>
+            <button
+              onClick={buyCarrotSeed}
+              disabled={coins < 3}
+              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl border font-semibold text-xs transition-all duration-150 select-none
+                ${coins >= 3
+                  ? 'bg-sky-500 hover:bg-sky-400 border-sky-400/60 text-white shadow-md cursor-pointer active:scale-95'
+                  : 'bg-white/5 border-white/10 text-white/25 cursor-not-allowed'
+                }`}
+            >
+              Buy · 3🪙
+            </button>
+          </div>
+
+          {/* Wheat seed */}
+          <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl border border-white/10 bg-white/5">
+            <div className="flex items-center gap-2.5">
+              <span className="text-2xl">🌾</span>
+              <div className="flex flex-col">
+                <span className="text-white font-semibold text-sm">Wheat Seed</span>
+                <span className="text-white/40 text-xs">{wheatSeeds} owned · 6🪙 each</span>
+              </div>
+            </div>
+            <button
+              onClick={buyWheatSeed}
+              disabled={coins < 6}
+              className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl border font-semibold text-xs transition-all duration-150 select-none
+                ${coins >= 6
+                  ? 'bg-sky-500 hover:bg-sky-400 border-sky-400/60 text-white shadow-md cursor-pointer active:scale-95'
+                  : 'bg-white/5 border-white/10 text-white/25 cursor-not-allowed'
+                }`}
+            >
+              Buy · 6🪙
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

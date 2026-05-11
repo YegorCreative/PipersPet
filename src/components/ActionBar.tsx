@@ -45,6 +45,8 @@ export const ActionBar = () => {
   const activePatch  = useFarmStore((s) => s.activePatch);
   const carrots      = useFarmStore((s) => s.carrots);
   const wheat        = useFarmStore((s) => s.wheat);
+  const carrotSeeds  = useFarmStore((s) => s.carrotSeeds);
+  const wheatSeeds   = useFarmStore((s) => s.wheatSeeds);
   const selectCrop   = useFarmStore((s) => s.selectCrop);
   const plantCrop    = useFarmStore((s) => s.plantCrop);
   const waterCrop    = useFarmStore((s) => s.waterCrop);
@@ -58,6 +60,8 @@ export const ActionBar = () => {
   const { cropState, cropType, selectedCrop } = patch;
   const harvestMeta = CROP_META[cropType];
 
+  const seedCount: Record<CropType, number> = { carrot: carrotSeeds, wheat: wheatSeeds };
+  const canPlant = seedCount[selectedCrop] > 0;
   const patchLabel = activePatch === 0 ? 'Patch 1' : 'Plot 2';
 
   return (
@@ -82,6 +86,7 @@ export const ActionBar = () => {
               {(['carrot', 'wheat'] as CropType[]).map((type) => {
                 const meta = CROP_META[type];
                 const active = selectedCrop === type;
+                const seeds = seedCount[type];
                 return (
                   <button
                     key={type}
@@ -94,14 +99,19 @@ export const ActionBar = () => {
                   >
                     <span>{meta.icon}</span>
                     <span>{meta.label}</span>
+                    <span className={`text-xs font-bold px-1.5 py-0.5 rounded-full ml-0.5
+                      ${seeds > 0 ? 'bg-green-500/30 text-green-300' : 'bg-white/10 text-white/30'}`}>
+                      {seeds}
+                    </span>
                   </button>
                 );
               })}
             </div>
             <ActionButton
               onClick={plantCrop}
+              disabled={!canPlant}
               icon="🌱"
-              label={`Plant ${CROP_META[selectedCrop].label}`}
+              label={canPlant ? `Plant ${CROP_META[selectedCrop].label}` : 'No seeds — buy in Market'}
               variant="green"
             />
           </div>

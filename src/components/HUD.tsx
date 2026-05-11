@@ -5,6 +5,8 @@ export const HUD = () => {
   const carrots          = useFarmStore((s) => s.carrots);
   const wheat            = useFarmStore((s) => s.wheat);
   const eggs             = useFarmStore((s) => s.eggs);
+  const carrotSeeds      = useFarmStore((s) => s.carrotSeeds);
+  const wheatSeeds       = useFarmStore((s) => s.wheatSeeds);
   const puppyHappiness   = useFarmStore((s) => s.puppyHappiness);
   const chickenHappiness = useFarmStore((s) => s.chickenHappiness);
   const day              = useFarmStore((s) => s.day);
@@ -38,6 +40,16 @@ export const HUD = () => {
       </div>
       <div className="flex items-center gap-1.5 text-yellow-100 font-semibold text-sm">
         <span>🥚</span><span>{eggs}</span>
+      </div>
+
+      <div className="w-px h-5 bg-white/30" />
+
+      {/* Seeds */}
+      <div className="flex items-center gap-1 text-white/50 font-semibold text-xs" title="Carrot seeds">
+        <span>🥕</span><span className="text-white/70">{carrotSeeds}</span><span className="text-white/30 text-[10px]">🌱</span>
+      </div>
+      <div className="flex items-center gap-1 text-white/50 font-semibold text-xs" title="Wheat seeds">
+        <span>🌾</span><span className="text-white/70">{wheatSeeds}</span><span className="text-white/30 text-[10px]">🌱</span>
       </div>
 
       <div className="w-px h-5 bg-white/30" />
