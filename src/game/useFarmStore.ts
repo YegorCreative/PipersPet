@@ -4,9 +4,6 @@ import { persist } from 'zustand/middleware';
 export type CropState = 'empty' | 'planted' | 'watered' | 'ready';
 export type CropType  = 'carrot' | 'wheat';
 
-export const GROWTH_MS_NORMAL   = 30_000;
-export const GROWTH_MS_UPGRADED = 20_000;
-
 export const CROP_GROWTH: Record<CropType, { normal: number; upgraded: number }> = {
   carrot: { normal: 30_000, upgraded: 20_000 },
   wheat:  { normal: 45_000, upgraded: 30_000 },
@@ -17,16 +14,39 @@ export const CROP_REWARD: Record<CropType, { coins: number; carrot: number; whea
   wheat:  { coins: 10, carrot: 0, wheat: 2 },
 };
 
-interface FarmStore {
-  coins: number;
-  carrots: number;
-  wheat: number;
-  eggs: number;
+export interface PatchState {
   cropState: CropState;
   cropType: CropType;
   selectedCrop: CropType;
   wateredAt: number | null;
   growthMs: number;
+}
+
+const DEFAULT_PATCH: PatchState = {
+  cropState: 'empty',
+  cropType: 'carrot',
+  selectedCrop: 'carrot',
+  wateredAt: null,
+  growthMs: CROP_GROWTH.carrot.normal,
+};
+
+function updatePatch(patches: PatchState[], index: number, delta: Partial<PatchState>): PatchState[] {
+  return patches.map((p, i) => (i === index ? { ...p, ...delta } : p));
+}
+
+function allDone(a: boolean, b: boolean, c: boolean) {
+  return a && b && c;
+}
+
+interface FarmStore {
+  coins: number;
+  carrots: number;
+  wheat: number;
+  eggs: number;
+
+  patches: PatchState[];
+  activePatch: number;
+  patch2Unlocked: boolean;
 
   puppyHappiness: number;
   puppyFedRecently: boolean;
@@ -43,6 +63,7 @@ interface FarmStore {
 
   hasWateringCan: boolean;
 
+  setActivePatch: (index: number) => void;
   selectCrop: (type: CropType) => void;
   plantCrop: () => void;
   waterCrop: () => void;
@@ -52,10 +73,7 @@ interface FarmStore {
   tick: () => void;
   startNextDay: () => void;
   buyWateringCan: () => void;
-}
-
-function allDone(a: boolean, b: boolean, c: boolean) {
-  return a && b && c;
+  unlockPatch2: () => void;
 }
 
 export const useFarmStore = create<FarmStore>()(
@@ -65,11 +83,10 @@ export const useFarmStore = create<FarmStore>()(
       carrots: 0,
       wheat: 0,
       eggs: 0,
-      cropState: 'empty',
-      cropType: 'carrot',
-      selectedCrop: 'carrot',
-      wateredAt: null,
-      growthMs: GROWTH_MS_NORMAL,
+
+      patches: [DEFAULT_PATCH, DEFAULT_PATCH],
+      activePatch: 0,
+      patch2Unlocked: false,
 
       puppyHappiness: 50,
       puppyFedRecently: false,
@@ -86,35 +103,35 @@ export const useFarmStore = create<FarmStore>()(
 
       hasWateringCan: false,
 
-      selectCrop: (type) => set({ selectedCrop: type }),
+      setActivePatch: (index) => set({ activePatch: index }),
+
+      selectCrop: (type) => {
+        const { patches, activePatch } = get();
+        if (patches[activePatch].cropState !== 'empty') return;
+        set({ patches: updatePatch(patches, activePatch, { selectedCrop: type }) });
+      },
 
       plantCrop: () => {
-        const s = get();
-        if (s.cropState !== 'empty') return;
-        set({ cropState: 'planted', cropType: s.selectedCrop, wateredAt: null });
+        const { patches, activePatch } = get();
+        const p = patches[activePatch];
+        if (p.cropState !== 'empty') return;
+        set({ patches: updatePatch(patches, activePatch, { cropState: 'planted', cropType: p.selectedCrop, wateredAt: null }) });
       },
 
       waterCrop: () => {
-        const s = get();
-        if (s.cropState !== 'planted') return;
-        const times = CROP_GROWTH[s.cropType];
-        set({
-          cropState: 'watered',
-          wateredAt: Date.now(),
-          growthMs: s.hasWateringCan ? times.upgraded : times.normal,
-        });
-      },
-
-      buyWateringCan: () => {
-        const s = get();
-        if (s.hasWateringCan || s.coins < 50) return;
-        set({ hasWateringCan: true, coins: s.coins - 50 });
+        const { patches, activePatch, hasWateringCan } = get();
+        const p = patches[activePatch];
+        if (p.cropState !== 'planted') return;
+        const times = CROP_GROWTH[p.cropType];
+        const growthMs = hasWateringCan ? times.upgraded : times.normal;
+        set({ patches: updatePatch(patches, activePatch, { cropState: 'watered', wateredAt: Date.now(), growthMs }) });
       },
 
       harvestCrop: () => {
         const s = get();
-        if (s.cropState !== 'ready') return;
-        const reward = CROP_REWARD[s.cropType];
+        const p = s.patches[s.activePatch];
+        if (p.cropState !== 'ready') return;
+        const reward = CROP_REWARD[p.cropType];
         const goalHarvested = true;
         const newCoins = s.coins + reward.coins;
         const dayBonus = !s.dayRewardGiven && allDone(goalHarvested, s.goalFedPuppy, s.goalFedChicken);
@@ -122,8 +139,7 @@ export const useFarmStore = create<FarmStore>()(
           carrots: s.carrots + reward.carrot,
           wheat: s.wheat + reward.wheat,
           coins: dayBonus ? newCoins + 25 : newCoins,
-          cropState: 'empty',
-          wateredAt: null,
+          patches: updatePatch(s.patches, s.activePatch, { cropState: 'empty', wateredAt: null }),
           goalHarvested,
           ...(dayBonus ? { dayComplete: true, dayRewardGiven: true } : {}),
         });
@@ -165,12 +181,17 @@ export const useFarmStore = create<FarmStore>()(
       },
 
       tick: () => {
-        const { cropState, wateredAt, growthMs } = get();
-        if (cropState === 'watered' && wateredAt !== null) {
-          if (Date.now() - wateredAt >= growthMs) {
-            set({ cropState: 'ready' });
+        const { patches } = get();
+        const now = Date.now();
+        let changed = false;
+        const newPatches = patches.map((p) => {
+          if (p.cropState === 'watered' && p.wateredAt !== null && now - p.wateredAt >= p.growthMs) {
+            changed = true;
+            return { ...p, cropState: 'ready' as CropState };
           }
-        }
+          return p;
+        });
+        if (changed) set({ patches: newPatches });
       },
 
       startNextDay: () => {
@@ -181,9 +202,21 @@ export const useFarmStore = create<FarmStore>()(
           goalFedChicken: false,
           dayComplete: false,
           dayRewardGiven: false,
-          cropState: 'empty',
-          wateredAt: null,
+          activePatch: 0,
+          patches: [DEFAULT_PATCH, DEFAULT_PATCH],
         }));
+      },
+
+      buyWateringCan: () => {
+        const s = get();
+        if (s.hasWateringCan || s.coins < 50) return;
+        set({ hasWateringCan: true, coins: s.coins - 50 });
+      },
+
+      unlockPatch2: () => {
+        const s = get();
+        if (s.patch2Unlocked || s.coins < 100) return;
+        set({ patch2Unlocked: true, coins: s.coins - 100 });
       },
     }),
     {
@@ -201,10 +234,8 @@ export const useFarmStore = create<FarmStore>()(
         goalFedChicken: s.goalFedChicken,
         dayComplete: s.dayComplete,
         dayRewardGiven: s.dayRewardGiven,
-        cropState: s.cropState,
-        cropType: s.cropType,
-        selectedCrop: s.selectedCrop,
-        wateredAt: s.wateredAt,
+        patches: s.patches,
+        patch2Unlocked: s.patch2Unlocked,
         hasWateringCan: s.hasWateringCan,
       }),
     }
