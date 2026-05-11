@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useFarmStore } from '../game/useFarmStore';
+import { useFarmStore, CROP_REWARD, type CropType } from '../game/useFarmStore';
 import { Shop } from './Shop';
 
 interface BtnProps {
@@ -16,6 +16,11 @@ const variantClasses: Record<BtnProps['variant'], string> = {
   orange: 'bg-orange-500 hover:bg-orange-400 border-orange-400/60 shadow-orange-900/30',
   pink:   'bg-rose-500 hover:bg-rose-400 border-rose-400/60 shadow-rose-900/30',
   ghost:  'bg-white/10 border-white/20 shadow-none',
+};
+
+const CROP_META: Record<CropType, { icon: string; label: string; rewardLabel: string }> = {
+  carrot: { icon: '🥕', label: 'Carrot', rewardLabel: '+3🥕 +5🪙' },
+  wheat:  { icon: '🌾', label: 'Wheat',  rewardLabel: '+2🌾 +10🪙' },
 };
 
 const ActionButton = ({ onClick, disabled, icon, label, variant }: BtnProps) => (
@@ -35,21 +40,58 @@ const ActionButton = ({ onClick, disabled, icon, label, variant }: BtnProps) => 
 );
 
 export const ActionBar = () => {
-  const cropState  = useFarmStore((s) => s.cropState);
-  const carrots    = useFarmStore((s) => s.carrots);
-  const plantCarrot = useFarmStore((s) => s.plantCarrot);
-  const waterCrop   = useFarmStore((s) => s.waterCrop);
-  const harvestCrop = useFarmStore((s) => s.harvestCrop);
-  const feedPuppy   = useFarmStore((s) => s.feedPuppy);
+  const cropState    = useFarmStore((s) => s.cropState);
+  const cropType     = useFarmStore((s) => s.cropType);
+  const selectedCrop = useFarmStore((s) => s.selectedCrop);
+  const carrots      = useFarmStore((s) => s.carrots);
+  const selectCrop   = useFarmStore((s) => s.selectCrop);
+  const plantCrop    = useFarmStore((s) => s.plantCrop);
+  const waterCrop    = useFarmStore((s) => s.waterCrop);
+  const harvestCrop  = useFarmStore((s) => s.harvestCrop);
+  const feedPuppy    = useFarmStore((s) => s.feedPuppy);
   const [shopOpen, setShopOpen] = useState(false);
+
+  const harvestMeta = CROP_META[cropType];
+  const harvestReward = CROP_REWARD[cropType];
 
   return (
     <>
       {shopOpen && <Shop onClose={() => setShopOpen(false)} />}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-wrap items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-black/25 backdrop-blur-md border border-white/15 shadow-2xl">
+
+        {/* Crop selector + plant — only when patch is empty */}
         {cropState === 'empty' && (
-          <ActionButton onClick={plantCarrot} icon="🌱" label="Plant Carrot" variant="green" />
+          <div className="flex items-center gap-2">
+            {/* Crop toggle */}
+            <div className="flex rounded-xl border border-white/15 overflow-hidden">
+              {(['carrot', 'wheat'] as CropType[]).map((type) => {
+                const meta = CROP_META[type];
+                const active = selectedCrop === type;
+                return (
+                  <button
+                    key={type}
+                    onClick={() => selectCrop(type)}
+                    className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold transition-all duration-150 select-none
+                      ${active
+                        ? 'bg-white/20 text-white'
+                        : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/75'
+                      }`}
+                  >
+                    <span>{meta.icon}</span>
+                    <span>{meta.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+            <ActionButton
+              onClick={plantCrop}
+              icon="🌱"
+              label={`Plant ${CROP_META[selectedCrop].label}`}
+              variant="green"
+            />
+          </div>
         )}
+
         {cropState === 'planted' && (
           <ActionButton onClick={waterCrop} icon="💧" label="Water Crop" variant="blue" />
         )}
@@ -57,7 +99,12 @@ export const ActionBar = () => {
           <ActionButton disabled icon="⏳" label="Growing… wait for it" variant="ghost" />
         )}
         {cropState === 'ready' && (
-          <ActionButton onClick={harvestCrop} icon="🥕" label="Harvest Carrots  +5🪙 +3🥕" variant="orange" />
+          <ActionButton
+            onClick={harvestCrop}
+            icon={harvestMeta.icon}
+            label={`Harvest ${harvestMeta.label}  ${harvestMeta.rewardLabel}`}
+            variant="orange"
+          />
         )}
 
         <div className="w-px h-7 bg-white/20" />
