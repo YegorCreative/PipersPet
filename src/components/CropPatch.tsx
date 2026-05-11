@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useFarmStore } from '../game/useFarmStore';
+import { useFarmStore, type CropType } from '../game/useFarmStore';
 
 const STAGES = [
   { threshold: 0,   emoji: '🌱', label: 'Just sprouting…' },
@@ -7,10 +7,21 @@ const STAGES = [
   { threshold: 66,  emoji: '🌾', label: 'Almost ready…' },
 ];
 
+const CROP_READY_EMOJI: Record<CropType, string> = {
+  carrot: '🥕',
+  wheat: '🌾',
+};
+
+const CROP_PLANTED_LABEL: Record<CropType, string> = {
+  carrot: 'Carrot planted',
+  wheat: 'Wheat planted',
+};
+
 export const CropPatch = () => {
-  const cropState = useFarmStore((s) => s.cropState);
-  const wateredAt = useFarmStore((s) => s.wateredAt);
-  const growthMs  = useFarmStore((s) => s.growthMs);
+  const cropState      = useFarmStore((s) => s.cropState);
+  const cropType       = useFarmStore((s) => s.cropType);
+  const wateredAt      = useFarmStore((s) => s.wateredAt);
+  const growthMs       = useFarmStore((s) => s.growthMs);
   const hasWateringCan = useFarmStore((s) => s.hasWateringCan);
   const [progress, setProgress] = useState(0);
 
@@ -19,6 +30,7 @@ export const CropPatch = () => {
     ? `Growth time: ${growthSec}s ⚡`
     : `Growth time: ${growthSec}s`;
   const growthLabelColor = hasWateringCan ? 'text-green-300' : 'text-white/40';
+
   useEffect(() => {
     if (cropState !== 'watered' || !wateredAt) {
       setProgress(0);
@@ -32,17 +44,17 @@ export const CropPatch = () => {
   }, [cropState, wateredAt, growthMs]);
 
   const filtered = STAGES.filter((s) => progress >= s.threshold);
-  const growthStage = filtered[filtered.length - 1]!
+  const growthStage = filtered[filtered.length - 1]!;
 
   const display = {
     empty: {
       emoji: null,
       label: 'Empty soil',
-      hint: 'Plant a carrot to begin',
+      hint: 'Choose a crop and plant',
     },
     planted: {
       emoji: '🌱',
-      label: 'Carrot planted',
+      label: CROP_PLANTED_LABEL[cropType],
       hint: 'Water it to start growing',
     },
     watered: {
@@ -51,7 +63,7 @@ export const CropPatch = () => {
       hint: null,
     },
     ready: {
-      emoji: '🥕',
+      emoji: CROP_READY_EMOJI[cropType],
       label: 'Ready to harvest!',
       hint: null,
     },
