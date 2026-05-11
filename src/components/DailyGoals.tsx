@@ -20,14 +20,14 @@ const GoalRow = ({ done, icon, label }: { done: boolean; icon: string; label: st
 );
 
 export const DailyGoals = () => {
-  const day          = useFarmStore((s) => s.day);
-  const goalPlanted  = useFarmStore((s) => s.goalPlanted);
-  const goalHarvested = useFarmStore((s) => s.goalHarvested);
-  const goalFed      = useFarmStore((s) => s.goalFed);
-  const dayComplete  = useFarmStore((s) => s.dayComplete);
-  const startNextDay = useFarmStore((s) => s.startNextDay);
+  const day             = useFarmStore((s) => s.day);
+  const goalHarvested   = useFarmStore((s) => s.goalHarvested);
+  const goalFedPuppy    = useFarmStore((s) => s.goalFedPuppy);
+  const goalFedChicken  = useFarmStore((s) => s.goalFedChicken);
+  const dayComplete     = useFarmStore((s) => s.dayComplete);
+  const startNextDay    = useFarmStore((s) => s.startNextDay);
 
-  const completed = [goalPlanted, goalHarvested, goalFed].filter(Boolean).length;
+  const completed = [goalHarvested, goalFedPuppy, goalFedChicken].filter(Boolean).length;
 
   return (
     <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-52">
@@ -57,15 +57,15 @@ export const DailyGoals = () => {
 
         {/* Goals list */}
         <div className="flex flex-col gap-2">
-          <GoalRow done={goalPlanted}   icon="🌱" label="Plant 1 carrot"  />
-          <GoalRow done={goalHarvested} icon="🥕" label="Harvest 1 crop"  />
-          <GoalRow done={goalFed}       icon="🦴" label="Feed Biscuit"     />
+          <GoalRow done={goalHarvested}  icon="🌾" label="Harvest 1 crop"    />
+          <GoalRow done={goalFedPuppy}   icon="🦴" label="Feed Biscuit 🥕"   />
+          <GoalRow done={goalFedChicken} icon="🌾" label="Feed Clover 🌾"    />
         </div>
 
         {/* Progress bar (3 segments) */}
         {!dayComplete && (
           <div className="flex gap-1.5 pt-0.5">
-            {[goalPlanted, goalHarvested, goalFed].map((done, i) => (
+            {[goalHarvested, goalFedPuppy, goalFedChicken].map((done, i) => (
               <div
                 key={i}
                 className={`flex-1 h-1.5 rounded-full transition-all duration-500
