@@ -15,8 +15,15 @@ export const HUD = () => {
   const chickenColor = chickenHappiness >= 60 ? '#fbbf24' : chickenHappiness >= 30 ? '#fb923c' : '#6b7280';
 
   return (
-    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 flex items-center gap-4 px-6 py-3 rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 shadow-xl">
-      <span className="font-bold text-white text-base tracking-wide" style={{ fontFamily: 'Outfit, sans-serif' }}>
+    <div className="
+      sticky top-0 z-20 w-full flex flex-wrap items-center gap-x-3 gap-y-1.5 px-3 py-2.5
+      bg-black/35 backdrop-blur-md border-b border-white/15 select-none
+      md:absolute md:top-4 md:left-1/2 md:-translate-x-1/2 md:z-10 md:w-auto
+      md:flex-nowrap md:gap-4 md:px-6 md:py-3
+      md:rounded-2xl md:bg-white/15 md:border md:border-white/25 md:shadow-xl
+    ">
+      {/* Title — desktop only */}
+      <span className="hidden md:block font-bold text-white text-base tracking-wide" style={{ fontFamily: 'Outfit, sans-serif' }}>
         🌾 Piper's Farm
       </span>
 
@@ -27,7 +34,8 @@ export const HUD = () => {
         Day {day}
       </span>
 
-      <div className="w-px h-5 bg-white/30" />
+      {/* Divider — desktop only */}
+      <div className="hidden md:block w-px h-5 bg-white/30" />
 
       <div className="flex items-center gap-1.5 text-amber-200 font-semibold text-sm">
         <span>🪙</span><span>{coins}</span>
@@ -42,7 +50,8 @@ export const HUD = () => {
         <span>🥚</span><span>{eggs}</span>
       </div>
 
-      <div className="w-px h-5 bg-white/30" />
+      {/* Divider — desktop only */}
+      <div className="hidden md:block w-px h-5 bg-white/30" />
 
       {/* Seeds */}
       <div className="flex items-center gap-1 text-white/50 font-semibold text-xs" title="Carrot seeds">
@@ -52,7 +61,8 @@ export const HUD = () => {
         <span>🌾</span><span className="text-white/70">{wheatSeeds}</span><span className="text-white/30 text-[10px]">🌱</span>
       </div>
 
-      <div className="w-px h-5 bg-white/30" />
+      {/* Divider — desktop only */}
+      <div className="hidden md:block w-px h-5 bg-white/30" />
 
       {/* Biscuit happiness */}
       <div className="flex items-center gap-1.5">

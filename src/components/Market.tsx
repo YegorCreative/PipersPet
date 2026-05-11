@@ -61,17 +61,16 @@ export const Market = ({ onClose }: MarketProps) => {
   const hasAnything = totalValue > 0;
 
   return (
-    /* Backdrop */
+    /* Backdrop — fixed so it covers viewport on mobile scroll too */
     <div
-      className="absolute inset-0 z-20 flex items-center justify-center"
+      className="fixed inset-0 z-30 flex items-center justify-center px-4"
       style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(3px)' }}
       onClick={onClose}
     >
       {/* Panel */}
       <div
-        className="relative w-88 rounded-3xl border border-white/20 shadow-2xl p-6 flex flex-col gap-5"
+        className="relative w-full max-w-[22rem] rounded-3xl border border-white/20 shadow-2xl p-6 flex flex-col gap-5 max-h-[85dvh] overflow-y-auto"
         style={{
-          width: '22rem',
           background: 'linear-gradient(160deg, #14261a, #0a1a10)',
         }}
         onClick={(e) => e.stopPropagation()}

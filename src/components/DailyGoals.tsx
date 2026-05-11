@@ -19,7 +19,7 @@ const GoalRow = ({ done, icon, label }: { done: boolean; icon: string; label: st
   </div>
 );
 
-export const DailyGoals = () => {
+export const DailyGoals = ({ inline = false }: { inline?: boolean }) => {
   const day             = useFarmStore((s) => s.day);
   const goalHarvested   = useFarmStore((s) => s.goalHarvested);
   const goalFedPuppy    = useFarmStore((s) => s.goalFedPuppy);
@@ -30,7 +30,10 @@ export const DailyGoals = () => {
   const completed = [goalHarvested, goalFedPuppy, goalFedChicken].filter(Boolean).length;
 
   return (
-    <div className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-52">
+    <div className={inline
+      ? 'w-full max-w-sm z-10'
+      : 'absolute left-4 top-1/2 -translate-y-1/2 z-10 w-52'
+    }>
       <div
         className={`rounded-2xl border backdrop-blur-md shadow-xl p-4 flex flex-col gap-3 transition-colors duration-500
           ${dayComplete

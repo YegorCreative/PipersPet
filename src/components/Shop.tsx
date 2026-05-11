@@ -12,15 +12,15 @@ export const Shop = ({ onClose }: ShopProps) => {
   const canAfford = coins >= 50;
 
   return (
-    /* Backdrop */
+    /* Backdrop — fixed so it covers viewport on mobile scroll too */
     <div
-      className="absolute inset-0 z-20 flex items-center justify-center"
+      className="fixed inset-0 z-30 flex items-center justify-center px-4"
       style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(3px)' }}
       onClick={onClose}
     >
       {/* Panel */}
       <div
-        className="relative w-80 rounded-3xl border border-white/20 shadow-2xl p-6 flex flex-col gap-5"
+        className="relative w-full max-w-sm rounded-3xl border border-white/20 shadow-2xl p-6 flex flex-col gap-5 max-h-[85dvh] overflow-y-auto"
         style={{ background: 'linear-gradient(160deg, #1e293b, #0f172a)' }}
         onClick={(e) => e.stopPropagation()}
       >

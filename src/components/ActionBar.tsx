@@ -29,7 +29,7 @@ const ActionButton = ({ onClick, disabled, icon, label, variant }: BtnProps) => 
     onClick={onClick}
     disabled={disabled}
     className={`
-      flex items-center gap-2 px-4 py-2.5 rounded-xl border text-white font-semibold text-sm
+      flex items-center gap-2 px-4 py-2.5 min-h-[44px] rounded-xl border text-white font-semibold text-sm
       transition-all duration-150 shadow-md select-none
       ${disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer active:scale-95 hover:shadow-lg'}
       ${variantClasses[variant]}
@@ -68,7 +68,14 @@ export const ActionBar = () => {
     <>
       {shopOpen && <Shop onClose={() => setShopOpen(false)} />}
       {marketOpen && <Market onClose={() => setMarketOpen(false)} />}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-wrap items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-black/25 backdrop-blur-md border border-white/15 shadow-2xl">
+      {/* Mobile: fixed bottom bar  |  Desktop: absolute centered pill */}
+      <div className="
+        fixed bottom-0 left-0 right-0 z-20
+        flex flex-wrap items-center justify-center gap-2 px-3 py-3
+        bg-black/40 backdrop-blur-md border-t border-white/15
+        md:absolute md:bottom-6 md:left-1/2 md:right-auto md:-translate-x-1/2 md:z-10
+        md:gap-3 md:px-6 md:py-4 md:rounded-2xl md:bg-black/25 md:border md:border-white/15 md:shadow-2xl
+      ">
 
         {/* Active patch indicator */}
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/10 border border-white/15 text-white/70 text-xs font-semibold select-none">
@@ -76,9 +83,10 @@ export const ActionBar = () => {
           <span>{patchLabel}</span>
         </div>
 
-        <div className="w-px h-7 bg-white/20" />
+        {/* Divider — desktop only */}
+        <div className="hidden md:block w-px h-7 bg-white/20" />
 
-        {/* Crop selector + plant — only when patch is empty */}
+        {/* Crop selector + plant — only when patch is empty */}}
         {cropState === 'empty' && (
           <div className="flex items-center gap-2">
             {/* Crop toggle */}
@@ -132,7 +140,8 @@ export const ActionBar = () => {
           />
         )}
 
-        <div className="w-px h-7 bg-white/20" />
+        {/* Divider — desktop only */}
+        <div className="hidden md:block w-px h-7 bg-white/20" />
 
         <ActionButton
           onClick={feedPuppy}
@@ -150,7 +159,8 @@ export const ActionBar = () => {
           variant="orange"
         />
 
-        <div className="w-px h-7 bg-white/20" />
+        {/* Divider — desktop only */}
+        <div className="hidden md:block w-px h-7 bg-white/20" />
 
         <ActionButton onClick={() => setMarketOpen(true)} icon="🏪" label="Market" variant="ghost" />
         <ActionButton onClick={() => setShopOpen(true)} icon="🛒" label="Shop" variant="ghost" />
