@@ -63,6 +63,11 @@ interface FarmStore {
 
   hasWateringCan: boolean;
 
+  sellCarrot: () => void;
+  sellWheat: () => void;
+  sellEgg: () => void;
+  sellAll: () => void;
+
   setActivePatch: (index: number) => void;
   selectCrop: (type: CropType) => void;
   plantCrop: () => void;
@@ -211,6 +216,31 @@ export const useFarmStore = create<FarmStore>()(
         const s = get();
         if (s.hasWateringCan || s.coins < 50) return;
         set({ hasWateringCan: true, coins: s.coins - 50 });
+      },
+
+      sellCarrot: () => {
+        const s = get();
+        if (s.carrots < 1) return;
+        set({ carrots: s.carrots - 1, coins: s.coins + 2 });
+      },
+
+      sellWheat: () => {
+        const s = get();
+        if (s.wheat < 1) return;
+        set({ wheat: s.wheat - 1, coins: s.coins + 4 });
+      },
+
+      sellEgg: () => {
+        const s = get();
+        if (s.eggs < 1) return;
+        set({ eggs: s.eggs - 1, coins: s.coins + 8 });
+      },
+
+      sellAll: () => {
+        const s = get();
+        const earned = s.carrots * 2 + s.wheat * 4 + s.eggs * 8;
+        if (earned === 0) return;
+        set({ carrots: 0, wheat: 0, eggs: 0, coins: s.coins + earned });
       },
 
       unlockPatch2: () => {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useFarmStore, type CropType } from '../game/useFarmStore';
 import { Shop } from './Shop';
+import { Market } from './Market';
 
 interface BtnProps {
   onClick?: () => void;
@@ -51,6 +52,7 @@ export const ActionBar = () => {
   const feedPuppy    = useFarmStore((s) => s.feedPuppy);
   const feedChicken  = useFarmStore((s) => s.feedChicken);
   const [shopOpen, setShopOpen] = useState(false);
+  const [marketOpen, setMarketOpen] = useState(false);
 
   const patch = patches[activePatch];
   const { cropState, cropType, selectedCrop } = patch;
@@ -61,6 +63,7 @@ export const ActionBar = () => {
   return (
     <>
       {shopOpen && <Shop onClose={() => setShopOpen(false)} />}
+      {marketOpen && <Market onClose={() => setMarketOpen(false)} />}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-wrap items-center justify-center gap-3 px-6 py-4 rounded-2xl bg-black/25 backdrop-blur-md border border-white/15 shadow-2xl">
 
         {/* Active patch indicator */}
@@ -139,6 +142,7 @@ export const ActionBar = () => {
 
         <div className="w-px h-7 bg-white/20" />
 
+        <ActionButton onClick={() => setMarketOpen(true)} icon="🏪" label="Market" variant="ghost" />
         <ActionButton onClick={() => setShopOpen(true)} icon="🛒" label="Shop" variant="ghost" />
       </div>
     </>
