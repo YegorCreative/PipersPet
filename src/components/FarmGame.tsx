@@ -1,6 +1,7 @@
 import { HUD } from './HUD';
 import { CropPatch } from './CropPatch';
 import { Puppy } from './Puppy';
+import { Chicken } from './Chicken';
 import { ActionBar } from './ActionBar';
 import { DailyGoals } from './DailyGoals';
 
@@ -38,13 +39,14 @@ export const FarmGame = () => {
       {/* Daily goals panel */}
       <DailyGoals />
 
-      {/* Farm scene — crop + puppy */}
+      {/* Farm scene — crop + animals */}
       <div
-        className="absolute inset-0 flex items-center justify-center gap-14"
+        className="absolute inset-0 flex items-center justify-center gap-10"
         style={{ paddingTop: 80, paddingBottom: 110 }}
       >
-        <CropPatch />
         <Puppy />
+        <CropPatch />
+        <Chicken />
       </div>
 
       {/* Action bar */}

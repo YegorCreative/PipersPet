@@ -44,11 +44,13 @@ export const ActionBar = () => {
   const cropType     = useFarmStore((s) => s.cropType);
   const selectedCrop = useFarmStore((s) => s.selectedCrop);
   const carrots      = useFarmStore((s) => s.carrots);
+  const wheat        = useFarmStore((s) => s.wheat);
   const selectCrop   = useFarmStore((s) => s.selectCrop);
   const plantCrop    = useFarmStore((s) => s.plantCrop);
   const waterCrop    = useFarmStore((s) => s.waterCrop);
   const harvestCrop  = useFarmStore((s) => s.harvestCrop);
   const feedPuppy    = useFarmStore((s) => s.feedPuppy);
+  const feedChicken  = useFarmStore((s) => s.feedChicken);
   const [shopOpen, setShopOpen] = useState(false);
 
   const harvestMeta = CROP_META[cropType];
@@ -114,6 +116,14 @@ export const ActionBar = () => {
           icon="🦴"
           label={carrots > 0 ? `Feed Biscuit  (${carrots} 🥕)  +2🪙` : 'Need carrots first'}
           variant="pink"
+        />
+
+        <ActionButton
+          onClick={feedChicken}
+          disabled={wheat < 1}
+          icon="🌾"
+          label={wheat > 0 ? `Feed Clover  (${wheat} 🌾)  +1🥚 +3🪙` : 'Need wheat first'}
+          variant="orange"
         />
 
         <div className="w-px h-7 bg-white/20" />
