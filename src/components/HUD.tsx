@@ -1,10 +1,11 @@
 import { useFarmStore } from '../game/useFarmStore';
 
 export const HUD = () => {
-  const coins = useFarmStore((s) => s.coins);
-  const carrots = useFarmStore((s) => s.carrots);
+  const coins     = useFarmStore((s) => s.coins);
+  const carrots   = useFarmStore((s) => s.carrots);
+  const wheat     = useFarmStore((s) => s.wheat);
   const happiness = useFarmStore((s) => s.puppyHappiness);
-  const day = useFarmStore((s) => s.day);
+  const day       = useFarmStore((s) => s.day);
 
   const happinessColor =
     happiness >= 60 ? '#f43f5e' : happiness >= 30 ? '#fb923c' : '#6b7280';
@@ -32,6 +33,11 @@ export const HUD = () => {
       <div className="flex items-center gap-1.5 text-orange-200 font-semibold text-sm">
         <span>🥕</span>
         <span>{carrots}</span>
+      </div>
+
+      <div className="flex items-center gap-1.5 text-yellow-200 font-semibold text-sm">
+        <span>🌾</span>
+        <span>{wheat}</span>
       </div>
 
       <div className="w-px h-5 bg-white/30" />
